@@ -1,0 +1,33 @@
+# 비밀정보 (DB 비밀번호, API 키) — 절대 올리면 안 됨
+.env
+*.env
+application-local.yml
+application-secret.properties
+config/secret*
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Java (Maven / Gradle)
+target/
+build/
+.gradle/
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# 로그, DB 덤프
+*.log
+logs/
+*.sql.gz
+*.dump
