@@ -77,6 +77,6 @@ wait_ok() {  # $1=서비스 이름 $2=주소, 최대 90초 대기
 }
 wait_ok python-api http://127.0.0.1:8000/health
 wait_ok java-api   http://127.0.0.1:8080/java/health
-curl -sf -o /dev/null http://127.0.0.1/ && echo "홍보 사이트 정상" || { echo "홍보 사이트 응답 없음: sudo tail /var/log/nginx/error.log"; exit 1; }
+curl -sf -o /dev/null http://127.0.0.1:8088/ && echo "홍보 사이트 정상" || { echo "홍보 사이트 응답 없음: sudo tail /var/log/nginx/error.log"; exit 1; }
 
 echo "배포 완료: $(git -C "$SRC" log -1 --format='%h %s' 2>/dev/null || date)"

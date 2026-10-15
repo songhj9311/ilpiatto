@@ -1,7 +1,7 @@
 # /etc/nginx/sites-available/ilpiatto
 # 홍보 사이트(/)는 누구나, 관리자 사이트(/admin/)와 API는 로그인한 사람만
 server {
-    listen 80;
+    listen 8088;
     server_name _;
 
     # 홍보 사이트
