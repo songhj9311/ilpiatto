@@ -57,7 +57,7 @@ if ! cmp -s "$PROMO/nginx-ilpiatto" "$CONF"; then
   cp "$PROMO/nginx-ilpiatto" "$CONF"
   ln -sf "$CONF" /etc/nginx/sites-enabled/ilpiatto
   if nginx -t; then
-    systemctl reload nginx
+    systemctl reload-or-restart nginx   # 켜져 있으면 reload, 꺼져 있으면 시작
   else
     echo "Nginx 설정 오류: 이전 설정으로 되돌립니다"
     [[ -f "$CONF.bak" ]] && cp "$CONF.bak" "$CONF"
@@ -66,6 +66,8 @@ if ! cmp -s "$PROMO/nginx-ilpiatto" "$CONF"; then
 else
   echo "변경 없음"
 fi
+# 설정이 그대로여도 Nginx가 꺼져 있으면 켠다
+systemctl is-active --quiet nginx || systemctl start nginx
 
 echo "== 6. 동작 확인"
 wait_ok() {  # $1=서비스 이름 $2=주소, 최대 90초 대기
