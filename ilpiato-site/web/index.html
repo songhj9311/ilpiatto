@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>일피아토 메뉴 가격 관리</title>
+<style>
+  :root {
+    --bg: #f6f4ef; --card: #ffffff; --ink: #1f1d1a; --muted: #6b665d; --line: #e4e0d6;
+    --accent: #7a2e1d; --accent-ink: #ffffff; --ok: #2f6b3a; --warn: #a3510b; --bad: #b42318;
+    --warn-bg: #fdf1e3; --bad-bg: #fdecea; --chip: #efe9dd;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #171512; --card: #211e1a; --ink: #f1ede5; --muted: #a59f94; --line: #36322b;
+      --accent: #d9825f; --accent-ink: #1a1410; --ok: #7fc28b; --warn: #f0a75c; --bad: #f2867c;
+      --warn-bg: #3a2a17; --bad-bg: #3d1f1c; --chip: #2e2a24;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 15px/1.5 "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif; }
+  header { padding: 20px 16px 8px; max-width: 1100px; margin: 0 auto;
+           display: flex; flex-wrap: wrap; gap: 12px; align-items: end; justify-content: space-between; }
+  h1 { margin: 0; font-size: 22px; letter-spacing: -0.02em; }
+  h1 small { display: block; font-size: 13px; font-weight: 400; color: var(--muted); }
+  main { max-width: 1100px; margin: 0 auto; padding: 8px 16px 48px; display: grid; gap: 16px; }
+  main > *, .two > * { min-width: 0; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 18px; }
+  h2 { margin: 0 0 14px; font-size: 16px; }
+  .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+  label { display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
+  input, select { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line);
+                  border-radius: 8px; padding: 8px 10px; width: 100%; }
+  input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 14px; }
+  button { font: inherit; border: 1px solid var(--line); background: var(--card); color: var(--ink);
+           border-radius: 8px; padding: 8px 14px; cursor: pointer; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  button.small { padding: 4px 10px; font-size: 13px; }
+  button.danger { color: var(--bad); }
+  .two { display: grid; gap: 16px; grid-template-columns: 1fr; }
+  @media (min-width: 860px) { .two { grid-template-columns: 1.1fr 0.9fr; } }
+  .preview { background: var(--bg); border: 1px dashed var(--line); border-radius: 10px; padding: 14px; }
+  .preview .price { font-size: 30px; font-weight: 700; letter-spacing: -0.02em; }
+  .preview dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; margin: 10px 0 0; font-size: 14px; }
+  .preview dt { color: var(--muted); } .preview dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 760px; }
+  th, td { padding: 9px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; }
+  th { color: var(--muted); font-weight: 500; font-size: 13px; }
+  td.num { font-variant-numeric: tabular-nums; }
+  td.sell { font-weight: 700; }
+  .chip { display: inline-block; font-size: 11px; padding: 1px 6px; border-radius: 99px; background: var(--chip);
+          color: var(--muted); margin-left: 4px; vertical-align: 1px; }
+  .warn { color: var(--warn); } .bad { color: var(--bad); } .good { color: var(--ok); }
+  .notes { margin: 0; padding-left: 18px; color: var(--muted); font-size: 13px; display: grid; gap: 4px; }
+  .msg { padding: 10px 12px; border-radius: 8px; font-size: 14px; display: none; }
+  .msg.show { display: block; }
+  .msg.err { background: var(--bad-bg); color: var(--bad); }
+  .msg.ok { background: var(--chip); color: var(--ok); }
+  .hint { font-size: 12px; color: var(--muted); }
+  .empty { text-align: center; color: var(--muted); padding: 28px 0; }
+</style>
+</head>
+<body>
+<header>
+  <h1>일피아토 메뉴 가격 관리<small>재료비와 조리 시간을 넣으면 이윤·부가세를 반영한 판매가를 계산합니다</small></h1>
+  <label style="min-width:160px">API 서버
+    <select id="backend">
+      <option value="/py/api">Python (FastAPI)</option>
+      <option value="/java/api">Java (Spring Boot)</option>
+    </select>
+  </label>
+</header>
+
+<main>
+  <div id="globalMsg" class="msg"></div>
+
+  <!-- 1. 가게 설정 -->
+  <section>
+    <h2>가게 설정</h2>
+    <form id="configForm" class="grid">
+      <label>기준 연도<input name="year" type="number" min="2026" max="2100" required></label>
+      <label>과세 유형
+        <select name="taxpayer_type">
+          <option value="general">일반과세 (부가세 10%)</option>
+          <option value="simple">간이과세</option>
+        </select>
+      </label>
+      <label>연 매출 예상 (원)<input name="annual_sales" type="number" min="0" step="1" required></label>
+      <label>시급 (원)<input name="hourly_wage" type="number" min="1" step="1" required></label>
+      <label>인건비 가산율 (%)<input name="labor_overhead_rate" type="number" min="0" max="100" step="1" required></label>
+      <label>목표 이윤율 (%)<input name="profit_rate" type="number" min="0" max="89" step="1" required></label>
+      <label>이윤 계산 방식
+        <select name="profit_mode">
+          <option value="margin">판매가(세전) 대비</option>
+          <option value="markup">원가 대비</option>
+        </select>
+      </label>
+      <label>가격 올림 단위
+        <select name="rounding_unit">
+          <option value="10">10원</option><option value="100">100원</option>
+          <option value="500">500원</option><option value="1000">1,000원</option>
+        </select>
+      </label>
+      <label>영업장 면적 (㎡)<input name="store_area_m2" type="number" min="0" step="0.1" required></label>
+    </form>
+    <div class="row">
+      <button class="primary" form="configForm" type="submit">설정 저장</button>
+      <span class="hint">인건비 가산율: 주휴수당만 20%, 4대보험 사업주 부담까지 넣으려면 약 30%</span>
+    </div>
+  </section>
+
+  <!-- 2. 메뉴 입력 -->
+  <section>
+    <h2 id="menuFormTitle">메뉴 추가</h2>
+    <div class="two">
+      <form id="menuForm" class="grid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr))">
+        <label style="grid-column:1/-1">메뉴 이름<input name="name" maxlength="50" required placeholder="예: 까르보나라"></label>
+        <label>1인분 재료비 (원)<input name="ingredient_cost" type="number" min="0" step="1" required></label>
+        <label>조리·서빙 시간 (분)<input name="labor_minutes" type="number" min="0" max="600" step="0.5" required></label>
+        <label style="grid-column:1/-1">판매가 직접 입력 (원, 선택)
+          <input name="manual_price" type="number" min="1" step="1" placeholder="비워두면 추천가를 사용합니다">
+          <span class="hint">부가세가 포함된 최종 가격으로 입력하세요. 메뉴판에 이 금액 그대로 표시됩니다.</span>
+        </label>
+      </form>
+      <div class="preview" aria-live="polite">
+        <div class="hint">메뉴판 표시 가격</div>
+        <div class="price" id="pvPrice">-</div>
+        <div id="pvWarn" class="hint"></div>
+        <dl>
+          <dt>추천 판매가</dt><dd id="pvRec">-</dd>
+          <dt>재료비 + 인건비</dt><dd id="pvCost">-</dd>
+          <dt>부가세 등 세금</dt><dd id="pvTax">-</dd>
+          <dt>이윤</dt><dd id="pvProfit">-</dd>
+          <dt>이윤율</dt><dd id="pvRate">-</dd>
+        </dl>
+      </div>
+    </div>
+    <div class="row">
+      <button class="primary" form="menuForm" type="submit" id="menuSubmit">메뉴 저장</button>
+      <button type="button" id="menuCancel" hidden>수정 취소</button>
+    </div>
+  </section>
+
+  <!-- 3. 메뉴 목록 -->
+  <section>
+    <h2>메뉴 가격표</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>메뉴</th><th>재료비</th><th>인건비</th><th>원가</th><th>추천가</th>
+              <th>판매가</th><th>세금</th><th>이윤</th><th>이윤율</th><th>상태</th><th></th></tr>
+        </thead>
+        <tbody id="menuRows"><tr><td colspan="11" class="empty">불러오는 중…</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 4. 법령 안내 -->
+  <section>
+    <h2>법령 점검</h2>
+    <ul id="notes" class="notes"></ul>
+  </section>
+</main>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const won = (n) => n == null ? "-" : Number(n).toLocaleString("ko-KR") + "원";
+const pct = (r) => (r * 100).toFixed(1) + "%";
+let editingId = null;
+let previewTimer = null;
+
+// ── API 서버 선택 (브라우저에 기억) ───────────────────────────
+try { const saved = localStorage.getItem("ilpiato-backend"); if (saved) $("#backend").value = saved; } catch (e) {}
+$("#backend").addEventListener("change", () => {
+  try { localStorage.setItem("ilpiato-backend", $("#backend").value); } catch (e) {}
+  loadAll();
+});
+
+async function api(path, options = {}) {
+  const res = await fetch($("#backend").value + path, {
+    headers: { "Content-Type": "application/json" }, ...options,
+  });
+  if (res.status === 204) return null;
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    // FastAPI 입력 검사 실패(422)는 detail이 배열로 옴
+    const d = data.detail;
+    throw new Error(Array.isArray(d) ? d.map((x) => `${x.loc.at(-1)}: ${x.msg}`).join(", ") : (d || `오류 ${res.status}`));
+  }
+  return data;
+}
+
+function showMsg(text, type = "ok") {
+  const el = $("#globalMsg");
+  el.textContent = text;
+  el.className = `msg show ${type}`;
+  if (type === "ok") setTimeout(() => el.classList.remove("show"), 2500);
+}
+
+function renderNotes(notes) {
+  $("#notes").innerHTML = "";
+  notes.forEach((n) => {
+    const li = document.createElement("li");
+    li.textContent = n;
+    if (n.includes("위반")) li.className = "bad";
+    $("#notes").appendChild(li);
+  });
+}
+
+// ── 가게 설정 ───────────────────────────────────────────────
+async function loadConfig() {
+  const c = await api("/config");
+  const f = $("#configForm");
+  f.year.value = c.year;
+  f.taxpayer_type.value = c.taxpayer_type;
+  f.annual_sales.value = Math.round(c.annual_sales);
+  f.hourly_wage.value = Math.round(c.hourly_wage);
+  f.labor_overhead_rate.value = Math.round(c.labor_overhead_rate * 100);
+  f.profit_rate.value = Math.round(c.profit_rate * 100);
+  f.profit_mode.value = c.profit_mode;
+  f.rounding_unit.value = String(c.rounding_unit);
+  f.store_area_m2.value = c.store_area_m2;
+}
+
+$("#configForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const f = e.target;
+  const body = {
+    year: Number(f.year.value),
+    taxpayer_type: f.taxpayer_type.value,
+    annual_sales: Number(f.annual_sales.value),
+    hourly_wage: Number(f.hourly_wage.value),
+    labor_overhead_rate: Number(f.labor_overhead_rate.value) / 100,
+    profit_rate: Number(f.profit_rate.value) / 100,
+    profit_mode: f.profit_mode.value,
+    rounding_unit: Number(f.rounding_unit.value),
+    store_area_m2: Number(f.store_area_m2.value),
+  };
+  try {
+    await api("/config", { method: "PUT", body: JSON.stringify(body) });
+    showMsg("가게 설정을 저장했습니다. 모든 메뉴 가격을 다시 계산했습니다.");
+    await loadMenus();
+    updatePreview();
+  } catch (err) {
+    showMsg(err.message, "err");
+  }
+});
+
+// ── 메뉴 입력 + 실시간 미리보기 ─────────────────────────────
+function menuBody() {
+  const f = $("#menuForm");
+  return {
+    name: f.name.value.trim() || "미리보기",
+    ingredient_cost: Number(f.ingredient_cost.value || 0),
+    labor_minutes: Number(f.labor_minutes.value || 0),
+    manual_price: f.manual_price.value ? Number(f.manual_price.value) : null,
+  };
+}
+
+function updatePreview() {
+  clearTimeout(previewTimer);
+  previewTimer = setTimeout(async () => {
+    const f = $("#menuForm");
+    if (!f.ingredient_cost.value && !f.labor_minutes.value) {
+      ["#pvPrice", "#pvRec", "#pvCost", "#pvTax", "#pvProfit", "#pvRate"].forEach((s) => ($(s).textContent = "-"));
+      $("#pvWarn").textContent = "";
+      return;
+    }
+    try {
+      const p = await api("/menus/preview", { method: "POST", body: JSON.stringify(menuBody()) });
+      $("#pvPrice").textContent = won(p.price);
+      $("#pvRec").textContent = won(p.recommended_price);
+      $("#pvCost").textContent = won(p.total_cost);
+      $("#pvTax").textContent = won(p.tax);
+      $("#pvProfit").textContent = won(p.profit);
+      $("#pvRate").textContent = pct(p.profit_rate);
+      $("#pvWarn").textContent = p.warnings.length ? "⚠ " + p.warnings.join(", ") : (p.manual ? "직접 입력한 가격" : "추천가 적용");
+      $("#pvWarn").className = p.warnings.length ? (p.profit < 0 ? "bad" : "warn") : "hint";
+    } catch (err) {
+      $("#pvWarn").textContent = err.message;
+      $("#pvWarn").className = "bad";
+    }
+  }, 250);
+}
+$("#menuForm").addEventListener("input", updatePreview);
+
+function resetMenuForm() {
+  editingId = null;
+  $("#menuForm").reset();
+  $("#menuFormTitle").textContent = "메뉴 추가";
+  $("#menuSubmit").textContent = "메뉴 저장";
+  $("#menuCancel").hidden = true;
+  updatePreview();
+}
+$("#menuCancel").addEventListener("click", resetMenuForm);
+
+$("#menuForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const body = menuBody();
+  body.name = $("#menuForm").name.value.trim();
+  try {
+    if (editingId) {
+      await api(`/menus/${editingId}`, { method: "PUT", body: JSON.stringify(body) });
+      showMsg(`'${body.name}' 메뉴를 수정했습니다.`);
+    } else {
+      await api("/menus", { method: "POST", body: JSON.stringify(body) });
+      showMsg(`'${body.name}' 메뉴를 추가했습니다.`);
+    }
+    resetMenuForm();
+    await loadMenus();
+  } catch (err) {
+    showMsg(err.message, "err");
+  }
+});
+
+// ── 메뉴 목록 ───────────────────────────────────────────────
+let menuCache = [];
+
+async function loadMenus() {
+  const data = await api("/menus");
+  menuCache = data.items;
+  renderNotes(data.notes);
+  const tbody = $("#menuRows");
+  tbody.innerHTML = "";
+  if (!data.items.length) {
+    tbody.innerHTML = '<tr><td colspan="11" class="empty">아직 등록된 메뉴가 없습니다. 위에서 메뉴를 추가하세요.</td></tr>';
+    return;
+  }
+  data.items.forEach((m) => {
+    const p = m.pricing;
+    const tr = document.createElement("tr");
+    const status = p.warnings.length
+      ? `<span class="${p.profit < 0 ? "bad" : "warn"}">⚠ ${p.warnings.join(", ")}</span>`
+      : '<span class="good">정상</span>';
+    tr.innerHTML = `
+      <td></td>
+      <td class="num">${won(m.ingredient_cost)}</td>
+      <td class="num">${won(p.labor_cost)}</td>
+      <td class="num">${won(p.total_cost)}</td>
+      <td class="num">${won(p.recommended_price)}</td>
+      <td class="num sell">${won(p.price)}${p.manual ? '<span class="chip">직접</span>' : ""}</td>
+      <td class="num">${won(p.tax)}</td>
+      <td class="num">${won(p.profit)}</td>
+      <td class="num">${pct(p.profit_rate)}</td>
+      <td>${status}</td>
+      <td><button class="small" data-edit="${m.id}">수정</button>
+          <button class="small danger" data-del="${m.id}">삭제</button></td>`;
+    tr.firstElementChild.textContent = m.name;   // 메뉴 이름은 textContent로 넣어 HTML 삽입 방지
+    tbody.appendChild(tr);
+  });
+}
+
+$("#menuRows").addEventListener("click", async (e) => {
+  const editId = e.target.dataset.edit;
+  const delId = e.target.dataset.del;
+  if (editId) {
+    const m = menuCache.find((x) => String(x.id) === editId);
+    const f = $("#menuForm");
+    editingId = m.id;
+    f.name.value = m.name;
+    f.ingredient_cost.value = Math.round(m.ingredient_cost);
+    f.labor_minutes.value = m.labor_minutes;
+    f.manual_price.value = m.manual_price ? Math.round(m.manual_price) : "";
+    $("#menuFormTitle").textContent = `메뉴 수정: ${m.name}`;
+    $("#menuSubmit").textContent = "수정 저장";
+    $("#menuCancel").hidden = false;
+    updatePreview();
+    f.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+  if (delId) {
+    const m = menuCache.find((x) => String(x.id) === delId);
+    if (!confirm(`'${m.name}' 메뉴를 삭제할까요?`)) return;
+    try {
+      await api(`/menus/${delId}`, { method: "DELETE" });
+      showMsg(`'${m.name}' 메뉴를 삭제했습니다.`);
+      if (editingId === m.id) resetMenuForm();
+      await loadMenus();
+    } catch (err) {
+      showMsg(err.message, "err");
+    }
+  }
+});
+
+async function loadAll() {
+  try {
+    await loadConfig();
+    await loadMenus();
+    updatePreview();
+  } catch (err) {
+    showMsg(`API 서버에 연결할 수 없습니다 (${$("#backend").value}): ${err.message}`, "err");
+  }
+}
+loadAll();
+</script>
+</body>
+</html>

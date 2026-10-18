@@ -1,0 +1,22 @@
+# main 브랜치에 push하면 매장 서버(셀프 호스티드 러너)에서 자동 배포
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:          # Actions 탭에서 "Run workflow" 버튼으로 수동 실행
+
+concurrency: deploy            # 배포가 겹쳐서 실행되지 않게
+
+jobs:
+  deploy:
+    runs-on: self-hosted       # 매장 PC에 설치한 러너에서 실행
+    steps:
+      - name: 저장소 내려받기
+        uses: actions/checkout@v4
+
+      - name: Python 문법 검사
+        run: python3 -m py_compile ilpiato-site/python-api/*.py
+
+      - name: 배포
+        run: sudo /opt/app/bin/deploy.sh "$GITHUB_WORKSPACE"

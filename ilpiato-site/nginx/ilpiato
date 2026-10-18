@@ -1,0 +1,30 @@
+# /etc/nginx/sites-available/ilpiato
+server {
+    listen 80;
+    server_name _;
+
+    # 관리자 사이트라 비밀번호로 보호 (htpasswd 파일은 배포 단계에서 생성)
+    auth_basic           "Ilpiato Admin";
+    auth_basic_user_file /etc/nginx/.htpasswd;
+
+    # 화면 (index.html)
+    root  /opt/app/web;
+    index index.html;
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Python API
+    location /py/ {
+        proxy_pass http://127.0.0.1:8000/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    # Java API
+    location /java/ {
+        proxy_pass http://127.0.0.1:8080/java/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
