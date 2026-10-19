@@ -1,20 +1,57 @@
+import logging
 import os
+import time
 from datetime import datetime
 from decimal import Decimal
 from typing import Literal
 
 import psycopg
-from fastapi import FastAPI, HTTPException, Response
+from fastapi import FastAPI, HTTPException, Request, Response
 from psycopg.rows import dict_row
 from pydantic import BaseModel, Field
 
 import pricing
 
 DB_URL = os.getenv(
-    "DB_URL", "postgresql://ilpiato:변경할_비밀번호@127.0.0.1:5432/ilpiato_db"
+    "DB_URL", "postgresql://ilpiatto:변경할_비밀번호@127.0.0.1:5432/ilpiatto_db"
 )
 
-app = FastAPI(title="일피아토 관리자 API (Python)", root_path="/py")
+app = FastAPI(title="일피아또 관리자 API (Python)", root_path="/py")
+
+
+# ── 로그 기록 ───────────────────────────────────────────────────
+# 파일 하나에 계속 이어 쓴다. 일주일마다 log_backup.py가 백업 후 비운다.
+# (파일을 직접 나누지 않는 이유: 나누기와 백업을 한곳에서만 하기 위해)
+LOG_FILE = os.getenv("LOG_FILE", "/var/log/ilpiatto/python-api.log")
+SKIP_PATHS = {"/health"}  # 배포 스크립트의 상태 확인은 기록하지 않음
+
+log = logging.getLogger("ilpiatto")
+log.setLevel(logging.INFO)
+try:
+    _handler = logging.FileHandler(LOG_FILE, mode="a", encoding="utf-8")
+except OSError:  # 로그 폴더가 없을 때(개발 PC 등)는 화면에만 출력
+    _handler = logging.StreamHandler()
+_handler.setFormatter(logging.Formatter(
+    "%(asctime)s | %(levelname)-5s | %(message)s", "%Y-%m-%d %H:%M:%S"))
+log.addHandler(_handler)
+
+
+@app.middleware("http")
+async def access_log(request: Request, call_next):
+    start = time.perf_counter()
+    # Nginx 뒤에 있으므로 실제 접속자 IP는 X-Real-IP 헤더에 있음
+    ip = request.headers.get("x-real-ip") or (request.client.host if request.client else "-")
+    try:
+        response = await call_next(request)
+    except Exception:
+        log.exception("%s | %s %s | 500 | 처리 중 오류", ip, request.method, request.url.path)
+        raise
+    if request.url.path not in SKIP_PATHS:
+        ms = (time.perf_counter() - start) * 1000
+        level = logging.WARNING if response.status_code >= 400 else logging.INFO
+        log.log(level, "%s | %s %s | %d | %.0fms",
+                ip, request.method, request.url.path, response.status_code, ms)
+    return response
 
 
 # ── 요청 데이터 형식 ─────────────────────────────────────────────

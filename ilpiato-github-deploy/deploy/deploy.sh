@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
-# 일피아토 배포 스크립트 — GitHub 저장소 내용을 서버 실행 위치로 반영
+# 일피아또 배포 스크립트 — GitHub 저장소 내용을 서버 실행 위치로 반영
 # 설치 위치: /opt/app/bin/deploy.sh (root 소유, 다른 계정은 수정 불가)
 # 사용법:   sudo /opt/app/bin/deploy.sh <저장소 폴더>
 set -euo pipefail
 
 # ── 저장소 안의 폴더 이름 (다르면 여기만 수정) ──────────────────
-ADMIN_DIR="ilpiato-site"      # 관리자 사이트 (sql, python-api, java-api, web)
-PROMO_DIR="ilpiato-promo"     # 홍보 사이트 (index.html, images, nginx-ilpiato)
+ADMIN_DIR="ilpiatto-site"      # 관리자 사이트 (sql, python-api, java-api, web)
+PROMO_DIR="ilpiatto-promo"     # 홍보 사이트 (index.html, images, nginx-ilpiatto)
 
 [[ $EUID -eq 0 ]] || { echo "sudo로 실행하세요"; exit 1; }
-SRC="$(realpath "${1:?저장소 폴더를 지정하세요. 예: sudo deploy.sh ~/ilpiato}")"
+SRC="$(realpath "${1:?저장소 폴더를 지정하세요. 예: sudo deploy.sh ~/ilpiatto}")"
 ADMIN="$SRC/$ADMIN_DIR"
 PROMO="$SRC/$PROMO_DIR"
 [[ -f "$ADMIN/sql/schema.sql" ]] || { echo "$ADMIN/sql/schema.sql 이 없습니다. ADMIN_DIR 이름을 확인하세요"; exit 1; }
@@ -20,7 +20,7 @@ PROMO="$SRC/$PROMO_DIR"
 sync_dir() { rsync -ri --checksum "$@"; }
 
 echo "== 1. DB 스키마"
-sudo -u postgres psql -q -d ilpiato_db -v ON_ERROR_STOP=1 < "$ADMIN/sql/schema.sql"
+sudo -u postgres psql -q -d ilpiatto_db -v ON_ERROR_STOP=1 < "$ADMIN/sql/schema.sql"
 
 echo "== 2. Python API"
 out=$(sync_dir --include='*.py' --exclude='*' "$ADMIN/python-api/" /opt/app/python-api/)
@@ -51,11 +51,11 @@ sync_dir --include='index.html' --include='images/' --exclude='images/*.txt' \
 chmod -R a+rX /opt/app/web /opt/app/promo
 
 echo "== 5. Nginx"
-CONF=/etc/nginx/sites-available/ilpiato
-if ! cmp -s "$PROMO/nginx-ilpiato" "$CONF"; then
+CONF=/etc/nginx/sites-available/ilpiatto
+if ! cmp -s "$PROMO/nginx-ilpiatto" "$CONF"; then
   [[ -f "$CONF" ]] && cp "$CONF" "$CONF.bak"
-  cp "$PROMO/nginx-ilpiato" "$CONF"
-  ln -sf "$CONF" /etc/nginx/sites-enabled/ilpiato
+  cp "$PROMO/nginx-ilpiatto" "$CONF"
+  ln -sf "$CONF" /etc/nginx/sites-enabled/ilpiatto
   if nginx -t; then
     systemctl reload-or-restart nginx   # 켜져 있으면 reload, 꺼져 있으면 시작
   else
@@ -79,6 +79,6 @@ wait_ok() {  # $1=서비스 이름 $2=주소, 최대 90초 대기
 }
 wait_ok python-api http://127.0.0.1:8000/health
 wait_ok java-api   http://127.0.0.1:8080/java/health
-curl -sf -o /dev/null http://127.0.0.1:8088/ && echo "홍보 사이트 정상" || { echo "홍보 사이트 응답 없음: sudo tail /var/log/nginx/error.log"; exit 1; }
+curl -sf -o /dev/null http://127.0.0.1:8088/ && echo "홍보 사이트 정상" || { echo "홍보 사이트 응답 없음: sudo tail /var/log/ilpiatto/nginx-error.log"; exit 1; }
 
 echo "배포 완료: $(git -C "$SRC" log -1 --format='%h %s' 2>/dev/null || date)"
