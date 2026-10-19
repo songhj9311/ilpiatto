@@ -1,0 +1,10 @@
+# /etc/systemd/system/ilpiatto-log-backup.service
+# 타이머(ilpiatto-log-backup.timer)가 일주일에 한 번 실행시키는 작업
+[Unit]
+Description=Ilpiato weekly log backup
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/app/bin/log_backup.py
+# 필요하면 값을 바꾸세요 (KEEP_WEEKS=0 이면 예전 백업을 지우지 않음)
+Environment=KEEP_WEEKS=12
