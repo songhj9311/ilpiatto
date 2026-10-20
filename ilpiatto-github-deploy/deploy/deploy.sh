@@ -50,6 +50,29 @@ sync_dir --include='index.html' --include='images/' --exclude='images/*.txt' \
          --include='images/**' --exclude='*' "$PROMO/" /opt/app/promo/
 chmod -R a+rX /opt/app/web /opt/app/promo
 
+echo "== 4-1. 메뉴판 (8090, 매장 Wi-Fi 전용)"
+MENU="$SRC/ilpiatto-menu"
+if [[ -f "$MENU/menu/index.html" ]]; then
+  mkdir -p /opt/app/menu
+  sync_dir "$MENU/menu/index.html" "$MENU/server/wifi-only.html" /opt/app/menu/
+  chmod -R a+rX /opt/app/menu
+  MCONF=/etc/nginx/sites-available/ilpiatto-menu
+  if ! cmp -s "$MENU/server/nginx-menu" "$MCONF"; then
+    [[ -f "$MCONF" ]] && cp "$MCONF" "$MCONF.bak"
+    cp "$MENU/server/nginx-menu" "$MCONF"
+    ln -sf "$MCONF" /etc/nginx/sites-enabled/ilpiatto-menu
+    if nginx -t; then
+      systemctl reload-or-restart nginx
+    else
+      echo "메뉴판 Nginx 설정 오류: 이전 설정으로 되돌립니다"
+      if [[ -f "$MCONF.bak" ]]; then cp "$MCONF.bak" "$MCONF"; else rm -f /etc/nginx/sites-enabled/ilpiatto-menu; fi
+      exit 1
+    fi
+  fi
+else
+  echo "메뉴판 없음 (건너뜀)"
+fi
+
 echo "== 5. Nginx"
 CONF=/etc/nginx/sites-available/ilpiatto
 if ! cmp -s "$PROMO/nginx-ilpiatto" "$CONF"; then
@@ -80,5 +103,6 @@ wait_ok() {  # $1=서비스 이름 $2=주소, 최대 90초 대기
 wait_ok python-api http://127.0.0.1:8000/health
 wait_ok java-api   http://127.0.0.1:8080/java/health
 curl -sf -o /dev/null http://127.0.0.1:8088/ && echo "홍보 사이트 정상" || { echo "홍보 사이트 응답 없음: sudo tail /var/log/ilpiatto/nginx-error.log"; exit 1; }
+curl -sf -o /dev/null http://127.0.0.1:8090/menu/ && echo "메뉴판 정상" || { echo "메뉴판 응답 없음: sudo tail /var/log/ilpiatto/menu-error.log"; exit 1; }
 
 echo "배포 완료: $(git -C "$SRC" log -1 --format='%h %s' 2>/dev/null || date)"

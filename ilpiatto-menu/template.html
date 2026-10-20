@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Il Piatto Menu</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400;1,500&family=Noto+Serif+KR:wght@400;500;600&display=swap">
+<style>
+/* Layout: 한 장의 긴 메뉴 카드. 가운데 좁은 단, 이름 ··· 가격 점선 리더, 섹션마다 이탈리아어 제목 */
+:root {
+  --bg: #F3F0E8;        /* 리넨 */
+  --paper: #FBF9F4;
+  --ink: #1D2A24;       /* 병 초록 잉크 */
+  --muted: #5E6B63;
+  --brass: #8C6A2F;     /* 황동 */
+  --line: #CFC6B2;
+  --font-display: "Cormorant Garamond", "Times New Roman", serif;
+  --font-body: "Noto Serif KR", "Nanum Myeongjo", "AppleMyungjo", "Batang", serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111A16; --paper: #16211C; --ink: #ECE6D8; --muted: #A3AA9F;
+    --brass: #C9AA6B; --line: #3A4740; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111A16; --paper: #16211C; --ink: #ECE6D8; --muted: #A3AA9F;
+  --brass: #C9AA6B; --line: #3A4740; color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg);
+}
+.wrap {
+  max-width: 720px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* ── 머리 ── */
+.masthead { text-align: center; padding-block: 64px 36px; }
+.eyebrow {
+  font-family: var(--font-display); font-weight: 600; font-size: 13px;
+  letter-spacing: .38em; text-transform: uppercase; color: var(--brass);
+  margin: 0;
+}
+.wordmark {
+  font-family: var(--font-display); font-style: italic; font-weight: 500;
+  font-size: clamp(64px, 17vw, 112px); line-height: .9; letter-spacing: -.01em;
+  margin: 14px 0 6px;
+}
+.ko-name { margin: 0; font-size: 14px; letter-spacing: .5em; color: var(--muted); padding-left: .5em; }
+.ornament { display: block; margin: 26px auto 0; width: 132px; height: 14px; color: var(--brass); }
+.unit { margin: 18px 0 0; font-size: 12px; color: var(--muted); letter-spacing: .04em; }
+
+/* ── 분류 바로가기 ── */
+.nav {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--bg);
+  border-block: 1px solid var(--line);
+}
+.nav ol {
+  list-style: none; margin: 0 auto; max-width: 720px;
+  display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none;
+  padding-block: 10px;
+  padding-left: max(12px, env(safe-area-inset-left, 0px));
+  padding-right: max(12px, env(safe-area-inset-right, 0px));
+}
+.nav ol::-webkit-scrollbar { display: none; }
+.nav a {
+  display: block; white-space: nowrap; text-decoration: none; color: var(--muted);
+  font-family: var(--font-display); font-style: italic; font-size: 17px;
+  padding: 2px 10px; border-radius: 2px;
+}
+.nav a:hover, .nav a:focus-visible { color: var(--brass); }
+.nav a:focus-visible { outline: 1px solid var(--brass); outline-offset: 2px; }
+
+/* ── 섹션 ── */
+main { padding-block: 8px 24px; }
+.course { padding-block: 48px 8px; scroll-margin-top: 60px; }
+.course-head { text-align: center; margin-bottom: 28px; }
+.course-head h2 {
+  margin: 0; font-family: var(--font-display); font-style: italic; font-weight: 500;
+  font-size: 40px; line-height: 1.1; text-wrap: balance;
+}
+.course-head .ko {
+  margin: 6px 0 0; font-size: 12px; letter-spacing: .42em; color: var(--brass);
+  padding-left: .42em;
+}
+.course-note {
+  margin: 14px auto 0; max-width: 34em; font-size: 12.5px; color: var(--muted);
+}
+.course-note::before { content: "※ "; color: var(--brass); }
+
+.items { list-style: none; margin: 0; padding: 0; display: grid; gap: 22px; }
+.item { min-width: 0; }
+.row { display: flex; align-items: baseline; gap: 10px; }
+.row h3 {
+  margin: 0; font-size: 16.5px; font-weight: 600; letter-spacing: -.01em;
+  min-width: 0;
+}
+.leader {
+  flex: 1; min-width: 24px; align-self: center; translate: 0 3px;
+  border-bottom: 1px dotted var(--line);
+}
+.price {
+  font-family: var(--font-display); font-weight: 600; font-size: 20px;
+  font-variant-numeric: lining-nums tabular-nums; letter-spacing: .02em;
+}
+.it {
+  margin: 1px 0 0; font-family: var(--font-display); font-style: italic;
+  font-size: 16px; color: var(--brass);
+}
+.desc { margin: 5px 0 0; font-size: 13.5px; color: var(--muted); max-width: 36em; }
+.opt {
+  display: inline-block; margin-top: 6px; font-family: var(--font-display);
+  font-weight: 600; font-size: 11.5px; letter-spacing: .24em;
+  color: var(--muted); border: 1px solid var(--line); padding: 1px 8px 0;
+}
+
+/* 설명이 없는 섹션(음료 등)은 넓은 화면에서 두 단 */
+.compact .items { gap: 16px 40px; }
+@media (min-width: 640px) {
+  .compact .items { grid-template-columns: 1fr 1fr; }
+}
+
+.divider { display: block; margin: 40px auto 0; width: 60px; height: 14px; color: var(--line); }
+
+/* ── 바닥 ── */
+.foot { text-align: center; padding-block: 40px 64px; border-top: 1px solid var(--line); margin-top: 48px; }
+.foot p { margin: 0; font-size: 12px; color: var(--muted); }
+.foot .sign {
+  font-family: var(--font-display); font-style: italic; font-size: 26px;
+  color: var(--ink); margin-bottom: 6px;
+}
+</style>
+</head>
+<body>
+<header class="masthead wrap">
+  <p class="eyebrow">Cucina Italiana</p>
+  <h1 class="wordmark">Il Piatto</h1>
+  <p class="ko-name">일피아또</p>
+  <svg class="ornament" viewBox="0 0 132 14" aria-hidden="true">
+    <path d="M0 7H54M78 7H132" stroke="currentColor" stroke-width="1" fill="none"/>
+    <path d="M66 1L72 7L66 13L60 7Z" stroke="currentColor" stroke-width="1" fill="none"/>
+    <circle cx="66" cy="7" r="1.6" fill="currentColor"/>
+  </svg>
+  <p class="unit">가격 단위 1,000원 &nbsp;·&nbsp; 예) 19.0 = 19,000원</p>
+</header>
+
+<nav class="nav" aria-label="메뉴 분류">
+  <ol>
+{{NAV}}
+  </ol>
+</nav>
+
+<main class="wrap">
+{{SECTIONS}}
+</main>
+
+<footer class="foot wrap">
+  <p class="sign">Buon appetito</p>
+  <p>메뉴 구성과 가격은 계절과 재료 사정에 따라 바뀔 수 있습니다.</p>
+</footer>
+</body>
+</html>

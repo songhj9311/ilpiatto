@@ -1,0 +1,36 @@
+section	name	name_it	category	price	description	option
+antipasti	바게트 4pc 추가	Baguette · 4 pz	Side menu	3000	바게트 4조각을 추가로 곁들입니다
+antipasti	마늘바게트 (3pc)	Pane all'Aglio	Side menu	4200	직접 만든 마늘 스프레드로 구운 바게트
+antipasti	감바스 알하이요	Gambas al Ajillo	Side menu	16500	새우, 버섯, 페페론치노에 엑스트라버진 올리브오일의 풍미가 좋은 감바스
+zuppa	통단호박스프	Zuppa nella Zucca	Main menu	19000	고소한 크림스프를 통째로 담아낸 단호박
+zuppa	단호박스프	Zuppa di Zucca	Main menu	9000	고소한 크림과 달콤한 단호박 퓨레를 끓여 만든 단호박 스프
+insalata	리코타치즈 샐러드	Insalata di Ricotta	Salad	14500	신선한 채소 위에 리코타치즈와 잡곡이 함께 어우러진 샐러드
+insalata	시저샐러드	Insalata Caesar	Salad	15000	신선한 채소에 홈메이드 시저 드레싱과 베이컨칩이 조화를 이룬 샐러드
+pasta	알리오올리오	Aglio e Olio	Pasta	16000	통마늘, 엑스트라버진 올리브오일, 로즈마리가 어우러진 오일 파스타
+pasta	명란 알리오올리오	Aglio e Olio al Mentaiko	Pasta	18000	마늘, 명란, 김가루가 조화를 이룬 오일 파스타
+pasta	쉬림프 오일파스타	Linguine ai Gamberi	Pasta	18500	엑스트라버진 올리브오일, 엔초비, 링귀니, 새우, 올리브가 어우러진 오일 파스타
+pasta	까르보나라	Carbonara	Pasta	17500	베이컨과 크림소스가 잘 어우러진 크림 파스타
+pasta	트러플 크림뇨끼	Gnocchi al Tartufo	Pasta	19000	베이컨, 마늘, 감자 뇨끼에 트러플 향을 더한 크림 파스타
+pasta	매콤새우버섯크림파스타	Crema Piccante ai Gamberi	Pasta	19000	매콤한 고추기름, 새우, 버섯으로 만든 크림 파스타
+pasta	아라비아따	Arrabbiata	Pasta	17000	베이컨, 방울토마토, 바질이 어우러진 매콤한 토마토 파스타
+pasta	스트라차텔라 토마토파스타	Pomodoro e Stracciatella	Pasta	19000	스트라차텔라 치즈를 듬뿍 올린 토마토 파스타
+pasta	해산물 빠쉐	Frutti di Mare in Brodo	Pasta	22500	신선한 해산물이 풍부한 토마토소스 베이스의 얼큰한 국물 파스타
+risotto	트러플 양송이버섯 리조또	Risotto ai Funghi e Tartufo	Risotto	19000	양송이버섯, 만가닥버섯에 트러플 오일 향이 풍부한 리조또
+risotto	통새우 토마토 리조또	Risotto Pomodoro e Gamberi	Risotto	18000	중하새우와 토마토소스가 잘 어우러진 리조또
+pizza	머쉬룸크림 할라피뇨 피자	Funghi e Jalapeño	Pizza	19500	양파, 양송이 크림소스, 할라피뇨를 올린 피자
+pizza	마르게리따 피자	Margherita	Pizza	18000	토마토와 바질 향이 잘 어우러진 피자
+pizza	콰트로 포르마지	Quattro Formaggi	Pizza	19500	모짜렐라, 고르곤졸라, 체다, 그라나파다노 네 가지 치즈를 올린 피자
+secondi	크림 수제함박스테이크	Hamburg alla Crema	Main menu	22000	크림소스를 곁들인 수제 함박스테이크
+bambini	키즈 크림파스타	Crema per Bambini	Pasta	11900	베이컨과 다진 양파로 만든 어린이 크림 파스타
+bambini	키즈 토마토파스타	Pomodoro per Bambini	Pasta	11900	베이컨과 다진 양파로 만든 어린이 토마토 파스타
+caffe	아메리카노	Americano	Coffee	3500		ICE · HOT
+caffe	디카페인 아메리카노	Americano Decaffeinato	Coffee	4200		ICE · HOT
+bevande	자몽에이드	Ade al Pompelmo	Drinks	6500
+bevande	레몬에이드	Ade al Limone	Drinks	6500
+bevande	패션후르츠에이드	Ade al Frutto della Passione	Drinks	6500
+bevande	제로콜라	Cola Zero	Drinks	2500
+bevande	콜라	Cola	Drinks	2500
+bevande	사이다	Gassosa	Drinks	2500
+alcolici	호세쿠엘보 하이볼	Highball · Tequila	Drinks	7000
+alcolici	얼그레이 하이볼	Highball · Earl Grey	Drinks	7000
+alcolici	스텔라 맥주	Birra Stella	Drinks	8000
