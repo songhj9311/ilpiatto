@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title th:text="${store.name} + ' | 산본동 이탈리안 레스토랑'">일피아또</title>
+    <meta name="description" th:content="${store.description}">
+    <meta name="keywords" th:content="${store.keywords}">
+    <link rel="canonical" th:href="${siteUrl} + '/'">
+
+    <meta name="naver-site-verification" th:content="${store.naverVerification}">
+    <meta name="google-site-verification" th:content="${store.googleVerification}">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" th:content="${store.name}">
+    <meta property="og:description" th:content="${store.description}">
+    <meta property="og:image" th:content="${store.image}">
+    <meta property="og:url" th:content="${siteUrl} + '/'">
+    <meta property="og:locale" content="ko_KR">
+
+    <script type="application/ld+json" th:utext="${jsonLd}"></script>
+</head>
+<body>
+<h1 th:text="${store.name}">일피아토</h1>
+<p th:text="${store.street} + ', ' + ${store.locality} + ' · ' + ${store.phone}"></p>
+</body>
+</html>

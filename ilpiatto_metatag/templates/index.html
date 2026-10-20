@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 기본 SEO -->
+    <title>{{ store.name }} | 산본동 이탈리안 레스토랑</title>
+    <meta name="description" content="{{ store.description }}">
+    <meta name="keywords" content="{{ store.keywords }}">
+    <link rel="canonical" href="{{ site_url }}/">
+
+    <!-- 검색엔진 소유확인 -->
+    <meta name="naver-site-verification" content="{{ store.naver_verification }}">
+    <meta name="google-site-verification" content="{{ store.google_verification }}">
+
+    <!-- Open Graph (카카오톡·네이버·페이스북 공유) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{{ store.name }}">
+    <meta property="og:description" content="{{ store.description }}">
+    <meta property="og:image" content="{{ store.image }}">
+    <meta property="og:url" content="{{ site_url }}/">
+    <meta property="og:locale" content="ko_KR">
+
+    <!-- 구조화 데이터 -->
+    <script type="application/ld+json">{{ jsonld | safe }}</script>
+</head>
+<body>
+<h1>{{ store.name }}</h1>
+<p>{{ store.street }}, {{ store.locality }} · {{ store.phone }}</p>
+</body>
+</html>
