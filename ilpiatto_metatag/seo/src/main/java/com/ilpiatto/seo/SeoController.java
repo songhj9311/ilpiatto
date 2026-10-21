@@ -15,23 +15,23 @@ import java.util.stream.Collectors;
 @Controller
 public class SeoController {
 
-    private static final String SITE_URL = "https://www.example.com";
+    private static final String SITE_URL = "https://www.ilpiatto.co.kr";
 
     private final ObjectMapper objectMapper;
 
     private final StoreInfo store = new StoreInfo(
             "일피아토",
-            "산본동 이탈리안 레스토랑 일피아토 - 생면 파스타와 함박 스테이크",
+            "산본동 이탈리안 레스토랑 일피아토 - 직접 만든 파스타와 스테이크를 편안한 분위기에서 즐겨보세요. 메뉴, 영업시간, 위치 안내",
             "일피아또, 산본동 맛집, 파스타, 이탈리안 레스토랑",
-            "+82-031-396-8111", "수리산로 191-1", "경기도 군포시", "00000",
-            37.3650, 126.9210,
-            SITE_URL + "/og-image.jpg", "₩₩", "Italian",
+            "+82-031-396-8111", "수리산로 191-1", "경기도 군포시 산본동", "00000",
+            37.3512, 126.9248,
+            SITE_URL + "/og-image.jpg", "1.0~2.5", "Italian",
             List.of(
                     new StoreInfo.Hours(List.of("Monday","Tuesday","Wednesday","Thursday","Friday", "Saturday", "Sunday"), "11:00", "21:30")),
-            List.of("https://naver.me/xxxxxxx",
-                    "https://maps.app.goo.gl/xxxxxxx",
-                    "https://place.map.kakao.com/0000000"),
-            "네이버_서치어드바이저_코드", "구글_서치콘솔_코드", "다음_웹마스터도구_PIN");
+            List.of("https://naver.me/GNJL6BZZ",
+                    "https://maps.app.goo.gl/iUJyKUGpHXXGEyom8",
+                    "https://place.map.kakao.com/736552898"),
+            "e00bf01a667b75cc3e3614f2cbe554e7d6e6154e", "2uKErFqXSB-rIPo_AxqyXW-i01oMhKjmkOMy0sPmLsM", "90242f0e318d6eca242d435923f432f059151961f0c8792fd32e205723552602:sgQJn+c4WOkeYlgoF2KRow==");
 
     public SeoController(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;

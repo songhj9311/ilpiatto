@@ -1,0 +1,38 @@
+# 일피아토 메뉴판 — 백업 서버 Nginx 설정 (/etc/nginx/sites-available/menu-backup)
+# __WIFI_SUBNET__ 은 setup_backup.sh가 menu-backup.env의 WIFI_SUBNET 값으로 바꿔 넣는다.
+#
+# 백업 서버는 손님 폰이 직접 접속하므로 손님의 실제 IP가 보인다.
+# 그래서 여기서 매장 Wi-Fi 대역만 정확히 허용한다.
+
+log_format ilpiatto_backup '$time_local | $remote_addr | $server_addr | "$request" | $status | $request_time';
+
+server {
+    listen 8090 default_server;
+    server_name _;
+
+    root /var/www/ilpiatto;
+    access_log /var/log/ilpiatto/backup-nginx-access.log ilpiatto_backup;
+    error_log  /var/log/ilpiatto/backup-nginx-error.log;
+
+    allow 127.0.0.0/8;
+    allow __WIFI_SUBNET__;      # 매장 Wi-Fi
+    deny  all;
+
+    error_page 403 /menu/wifi-only.html;
+    location = /menu/wifi-only.html { allow all; internal; }
+
+    location = /     { return 302 /menu/; }
+    location = /menu { return 302 /menu/; }
+
+    location /menu/ {
+        index index.html;
+        add_header Cache-Control "no-cache";   # 메뉴가 바뀌면 손님 폰에서도 바로 바뀌게
+    }
+
+    location = /health {
+        default_type text/plain;
+        return 200 "menu-backup ok\n";
+    }
+
+    location / { return 404; }
+}

@@ -6,35 +6,34 @@ from fastapi.templating import Jinja2Templates
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
-SITE_URL = "https://www.example.com"   # 실제 도메인으로 교체
+SITE_URL = "https://www.ilpiatto.co.kr"   # 실제 도메인으로 교체
 
 STORE = {
-    "name": "일피아또",
-    "description": "OO동 이탈리안 레스토랑 일피아또 - 생면 파스타와 화덕 피자",
-    "keywords": "일피아또, OO동 맛집, 파스타, 이탈리안 레스토랑",
-    "phone": "+82-2-000-0000",
-    "street": "OO로 00",
-    "locality": "서울특별시 OO구",
+    "name": "일피아토",
+    "description": "산본동 이탈리안 레스토랑 일피아토 - 직접 만든 파스타와 함박 스테이크를 편안한 분위기에서 즐겨보세요. 메뉴, 영업시간, 위치 안내",
+    "keywords": "일피아토, 산본동 맛집, 파스타, 이탈리안 레스토랑",
+    "phone": "+82-031-396-8111",
+    "street": "수리산로 191-1",
+    "locality": "경기도 군포시 산본동",
     "postal_code": "00000",
-    "lat": 37.5665,
-    "lng": 126.9780,
+    "lat": 37.3512,
+    "lng": 126.9248,
     "image": f"{SITE_URL}/static/og-image.jpg",   # 1200x630 권장
-    "price_range": "₩₩",
+    "price_range": "1.0~2.5",
     "cuisine": "Italian",
     "hours": [
-        {"days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], "opens": "11:30", "closes": "22:00"},
-        {"days": ["Saturday", "Sunday"], "opens": "12:00", "closes": "21:00"},
+        {"days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "opens": "11:00", "closes": "21:30"},
     ],
     # 플랫폼 등록 후 받은 URL
     "same_as": [
-        "https://naver.me/xxxxxxx",
-        "https://maps.app.goo.gl/xxxxxxx",
-        "https://place.map.kakao.com/0000000",
+        "https://naver.me/GNJL6BZZ",
+        "https://maps.app.goo.gl/iUJyKUGpHXXGEyom8",
+        "https://place.map.kakao.com/736552898",
     ],
     # 각 검색엔진에서 발급받은 값
-    "naver_verification": "네이버_서치어드바이저_코드",
-    "google_verification": "구글_서치콘솔_코드",
-    "daum_pin": "다음_웹마스터도구_PIN",
+    "naver_verification": "e00bf01a667b75cc3e3614f2cbe554e7d6e6154e",
+    "google_verification": "2uKErFqXSB-rIPo_AxqyXW-i01oMhKjmkOMy0sPmLsM",
+    "daum_pin": "90242f0e318d6eca242d435923f432f059151961f0c8792fd32e205723552602:sgQJn+c4WOkeYlgoF2KRow==",
 }
 
 

@@ -1,0 +1,44 @@
+# 일피아토 메뉴판 — 주 서버(WSL) Nginx 설정 (/etc/nginx/sites-available/ilpiatto-menu)
+#
+# 메뉴판은 홍보·관리자 사이트(8088)와 포트를 나눠 8090번에서만 연다.
+# 매장 Wi-Fi 제한은 두 겹이다.
+#   1) Windows 방화벽: 8090번은 매장 Wi-Fi 대역(172.30.1.0/24)에서 온 접속만 허용 (menu-vip.ps1이 설정)
+#   2) 여기 Nginx: 사설 IP만 허용, 인터넷·Tailscale(100.64.0.0/10) 주소는 거부
+# WSL은 Windows 포트 전달(portproxy)을 거쳐 들어오기 때문에 손님 IP가 아니라 Windows 내부 주소가 보인다.
+# 그래서 여기서는 손님 대역을 정확히 고를 수 없고, 정확한 제한은 1)의 Windows 방화벽이 맡는다.
+
+log_format ilpiatto_menu '$time_local | $remote_addr | "$request" | $status | $request_time';
+
+server {
+    listen 8090;
+    server_name _;
+
+    root /opt/app/menu;
+    access_log /var/log/ilpiatto/menu-access.log ilpiatto_menu;
+    error_log  /var/log/ilpiatto/menu-error.log;
+
+    allow 127.0.0.0/8;
+    allow 10.0.0.0/8;
+    allow 172.16.0.0/12;      # WSL 내부망 + 매장 Wi-Fi(172.30.1.x)
+    allow 192.168.0.0/16;
+    deny  all;
+
+    error_page 403 /wifi-only.html;
+    location = /wifi-only.html { allow all; internal; }
+
+    location = /     { return 302 /menu/; }
+    location = /menu { return 302 /menu/; }
+
+    location /menu/ {
+        alias /opt/app/menu/;                  # alias에는 try_files를 같이 쓰지 않는다 (Nginx 알려진 문제)
+        index index.html;
+        add_header Cache-Control "no-cache";   # 메뉴를 고치면 손님 폰에도 바로 반영
+    }
+
+    location / { return 404; }
+
+    location = /health {
+        default_type text/plain;
+        return 200 "menu ok\n";
+    }
+}
