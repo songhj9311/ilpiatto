@@ -537,6 +537,17 @@
 </footer>
 
 <script>
+  // 모바일 메뉴 열고 닫기 (메뉴 항목을 누르거나 바깥을 누르면 닫힘)
+  {
+    const bar = document.querySelector(".topbar");
+    const toggle = bar.querySelector(".menu-toggle");
+    const setOpen = (open) => { bar.classList.toggle("open", open); toggle.setAttribute("aria-expanded", String(open)); };
+    toggle.addEventListener("click", () => setOpen(!bar.classList.contains("open")));
+    bar.querySelectorAll(".nav a").forEach((a) => a.addEventListener("click", () => setOpen(false)));
+    document.addEventListener("click", (e) => { if (!bar.contains(e.target)) setOpen(false); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") setOpen(false); });
+  }
+
   // 사진 파일이 있으면 사진을, 없으면 "사진 자리" 안내를 보여준다
   document.querySelectorAll(".photo img").forEach((img) => {
     const ok = () => img.closest(".photo").classList.add("has-img");
@@ -544,6 +555,127 @@
     if (img.complete) { img.naturalWidth > 0 ? ok() : fail(); }
     else { img.addEventListener("load", ok); img.addEventListener("error", fail); }
   });
-</script>
+
+  {  // 갤러리 코드를 블록으로 감싸 다른 스크립트와 이름이 겹치지 않게
+  // ── 갤러리 ────────────────────────────────────────────────
+  // gallery.json 이 없을 때(사진을 아직 안 넣었을 때) 보여줄 기본 배치 = 추천 촬영 목록
+  // shape: feature(큰 정사각 2×2) · wide(가로 2×1) · tall(세로 1×2) · square(1×1)
+  const PLAN = [
+    ["feature", "food",  "대표 요리", "위에서 내려다본 시그니처 파스타"],
+    ["tall",    "mood",  "플레이팅하는 손", "세로 사진"],
+    ["square",  "food",  "요리 클로즈업", "까르보나라 · 뇨끼"],
+    ["square",  "food",  "피자", "치즈가 늘어나는 순간"],
+    ["wide",    "space", "홀 전경", "가로 사진 · 낮"],
+    ["square",  "mood",  "와인과 테이블", "잔·커트러리 디테일"],
+    ["tall",    "space", "입구·외관", "세로 사진"],
+    ["square",  "food",  "리조또", ""],
+    ["square",  "food",  "디저트", ""],
+    ["square",  "space", "소품 디테일", "조명·식기·꽃"],
+    ["wide",    "mood",  "저녁 창가", "가로 사진 · 해 질 녘"],
+    ["wide",    "food",  "함께 나누는 식탁", "가로 사진 · 여러 요리"],
+  ].map(([shape, cat, alt, hint], i) => ({
+    shape, cat, alt, hint, src: `images/gallery/slot-${String(i + 1).padStart(2, "0")}.jpg`,
+  }));
+
+  const grid = document.getElementById("gallery-grid");
+  const box = document.getElementById("lightbox");
+  const lbImg = document.getElementById("lb-img");
+  let photos = [];   // 전체 목록
+  let shown = [];    // 지금 탭에서 보이는 사진(크게 보기 순서)
+  let current = 0;
+
+  function el(tag, cls, text) {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text) n.textContent = text;   // 글자는 textContent로만 넣는다
+    return n;
+  }
+
+  function render(cat) {
+    grid.classList.toggle("mosaic", cat === "all");
+    grid.replaceChildren();
+    shown = [];
+    photos.filter((p) => cat === "all" || p.cat === cat).forEach((p) => {
+      const li = el("li", `tile ${p.shape || "square"}`);
+      const fig = el("figure", "photo");
+      const img = new Image();
+      img.src = p.thumb || p.src;
+      img.alt = p.alt || "";
+      img.loading = "lazy"; img.decoding = "async";
+      if (p.w && p.h) { img.width = p.w; img.height = p.h; }
+      const slot = el("figcaption", "slot");
+      slot.append(el("strong", "", p.alt), document.createTextNode(p.hint || ""));
+      fig.append(img, slot);
+      const btn = el("button");
+      btn.type = "button";
+      btn.setAttribute("aria-label", `${p.alt || "사진"} 크게 보기`);
+      li.append(fig, el("span", "cap", p.alt), btn);
+      grid.append(li);
+
+      const entry = { p, ok: false };
+      shown.push(entry);
+      const ok = () => { fig.classList.add("has-img"); entry.ok = true; };
+      img.addEventListener("load", ok);
+      img.addEventListener("error", () => img.remove());   // 사진이 없으면 "사진 자리" 안내가 보임
+      btn.addEventListener("click", () => openAt(shown.indexOf(entry)));
+    });
+  }
+
+  // 크게 보기 (사진이 실제로 있는 것만 넘겨 본다)
+  const ready = () => shown.filter((e) => e.ok);
+  function show(i) {
+    const list = ready();
+    if (!list.length) return;
+    current = (i + list.length) % list.length;
+    const p = list[current].p;
+    lbImg.src = p.src; lbImg.alt = p.alt || "";
+    document.getElementById("lb-cap").textContent = p.alt || "";
+    document.getElementById("lb-count").textContent = `${current + 1} / ${list.length}`;
+  }
+  function openAt(indexInShown) {
+    const target = shown[indexInShown];
+    if (!target || !target.ok) return;
+    box.showModal();
+    show(ready().indexOf(target));
+  }
+  box.addEventListener("click", (e) => {
+    const act = e.target.closest("[data-lb]")?.dataset.lb;
+    if (act === "close") box.close();
+    else if (act === "prev") show(current - 1);
+    else if (act === "next") show(current + 1);
+    else if (e.target === box || e.target.classList.contains("lb-stage")) box.close();  // 바깥 누르면 닫기
+  });
+  box.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowLeft") show(current - 1);
+    if (e.key === "ArrowRight") show(current + 1);
+  });
+  // 휴대폰: 좌우로 밀어서 넘기기
+  let startX = null;
+  box.addEventListener("touchstart", (e) => { startX = e.touches[0].clientX; }, { passive: true });
+  box.addEventListener("touchend", (e) => {
+    if (startX === null) return;
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 50) show(current + (dx < 0 ? 1 : -1));
+    startX = null;
+  });
+
+  // 탭
+  document.querySelectorAll(".gallery-tabs button").forEach((b) => {
+    b.addEventListener("click", () => {
+      document.querySelectorAll(".gallery-tabs button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      render(b.dataset.cat);
+    });
+  });
+
+  (async () => {
+    try {
+      const res = await fetch("images/gallery/gallery.json", { cache: "no-cache" });
+      if (res.ok) photos = (await res.json()).photos || [];
+    } catch (_) { /* 파일이 없으면 기본 배치 */ }
+    if (!photos.length) photos = PLAN;
+    render("all");
+  })();
+  }
+</s
 </body>
 </html>
