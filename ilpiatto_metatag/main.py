@@ -33,7 +33,7 @@ STORE = {
     # 각 검색엔진에서 발급받은 값
     "naver_verification": "e00bf01a667b75cc3e3614f2cbe554e7d6e6154e",
     "google_verification": "2uKErFqXSB-rIPo_AxqyXW-i01oMhKjmkOMy0sPmLsM",
-    "daum_pin": "ghtjd1200",
+    "daum_pin": "90242f0e318d6eca242d435923f432f059151961f0c8792fd32e205723552602:sgQJn+c4WOkeYlgoF2KRow==",
 }
 
 
