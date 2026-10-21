@@ -111,7 +111,10 @@
   body {
     margin: 0; background: var(--paper); color: var(--ink);
     font: 300 16px/1.8 var(--sans); -webkit-font-smoothing: antialiased;
+	word-break: keep-all; overflow-wrap: break-word;   /* 한글은 단어 단위로 줄바꿈 */
+	-webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent;
   }
+  section.block { scroll-margin-top: 56px; }          /* 메뉴를 눌러 이동할 때 상단 바에 가리지 않게 */
   a { color: inherit; }
   :focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; }
   .wrap { max-width: var(--wrap); margin: 0 auto; padding-inline: var(--gutter); }
@@ -669,7 +672,7 @@
 
   (async () => {
     try {
-      const res = await fetch("images/gallery/gallery.json", { cache: "no-cache" });
+      const res = await fetch("ilpiatto-promo/images/gallery/gallery.json", { cache: "no-cache" });
       if (res.ok) photos = (await res.json()).photos || [];
     } catch (_) { /* 파일이 없으면 기본 배치 */ }
     if (!photos.length) photos = PLAN;
