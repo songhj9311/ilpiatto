@@ -13,7 +13,7 @@ jobs:
     runs-on: self-hosted       # 매장 PC에 설치한 러너에서 실행
     steps:
       - name: 저장소 내려받기
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Python 문법 검사
         run: python3 -m py_compile ilpiatto-site/python-api/*.py
