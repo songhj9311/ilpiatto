@@ -27,7 +27,7 @@ from PIL import Image, ImageOps
 
 HERE = Path(__file__).resolve().parent
 SRC = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("/mnt/d/ilpiatto/gallery-src")
-OUT = Path(sys.argv[2]) if len(sys.argv) > 2 else HERE.parent / "images" / "gallery"
+OUT = Path(sys.argv[2]) if len(sys.argv) > 2 else "ilpiatto-promo"/HERE.parent / "images" / "gallery"
 
 CATEGORIES = {"요리": "food", "공간": "space", "분위기": "mood",
               "food": "food", "space": "space", "mood": "mood"}
