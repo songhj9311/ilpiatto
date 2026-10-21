@@ -58,7 +58,7 @@ def shape_of(w: int, h: int, name: str) -> str:
 def alt_of(name: str) -> str:
     stem = re.sub(r"^(대표|main)[-_ ]*", "", Path(name).stem)
     stem = re.sub(r"^\d+[-_ ]*", "", stem)          # 앞 번호 제거 (01-...)
-    return re.sub(r"[-_]+", " ", stem).strip() or "일피아또"
+    return re.sub(r"[-_]+", " ", stem).strip() or "일피아토"
 
 
 def load_sources() -> list[dict]:
