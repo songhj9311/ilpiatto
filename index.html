@@ -199,13 +199,64 @@
   .item .desc { margin: 2px 0 0; font-size: 14px; color: var(--muted); }
   .menu-note { margin: clamp(40px, 5vw, 56px) 0 0; font-size: 13px; color: var(--muted); }
 
-  /* 후기 */
-  .reviews { display: grid; gap: clamp(24px, 4vw, 40px); grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
-  .review { margin: 0; padding: 32px 28px 28px; background: var(--plate); border-radius: 4px; display: grid; gap: 18px; align-content: space-between; }
-  .review blockquote { margin: 0; font: 400 17px/1.9 var(--serif-kr); }
-  .review blockquote::before { content: "“"; display: block; font: 400 56px/.6 var(--display); color: var(--brass); margin-bottom: 14px; }
-  .review figcaption { font-size: 13px; color: var(--muted); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-  .sample { font-size: 11px; border: 1px solid var(--line); border-radius: 999px; padding: 0 8px; }
+  /* 갤러리 */
+  .gallery-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 clamp(24px, 3vw, 32px); padding: 0; list-style: none; }
+  .gallery-tabs button {
+    font: 400 14px/1 var(--sans); color: var(--muted); background: none; cursor: pointer;
+    padding: 10px 20px; border: 1px solid var(--line); border-radius: 999px;
+  }
+  .gallery-tabs button:hover { color: var(--ink); border-color: var(--ink); }
+  .gallery-tabs button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+  .gallery-tabs .it { font: italic 400 13px/1 var(--display); margin-left: 4px; opacity: .8; }
+
+  /* 정사각 칸을 기본 단위로 하는 격자. 칸 높이 = 칸 너비 (컨테이너 너비 기준) */
+  .gallery { container-type: inline-size; }
+  .grid {
+    --cols: 2; --gap: clamp(8px, 1.4vw, 14px);
+    display: grid; gap: var(--gap); grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+    grid-auto-rows: calc((100cqi - (var(--cols) - 1) * var(--gap)) / var(--cols));
+    grid-auto-flow: dense; margin: 0; padding: 0; list-style: none;
+  }
+  @container (min-width: 720px) { .grid { --cols: 4; } }
+  /* 전체 보기에서만 모양별로 칸을 넓힘 (카테고리 보기는 모두 정사각) */
+  .grid.mosaic .feature { grid-column: span 2; grid-row: span 2; }
+  .grid.mosaic .wide    { grid-column: span 2; }
+  .grid.mosaic .tall    { grid-row: span 2; }
+
+  .tile { position: relative; min-width: 0; }
+  .tile .photo { width: 100%; height: 100%; border-radius: 4px; }
+  .tile button { all: unset; position: absolute; inset: 0; cursor: zoom-in; border-radius: 4px; }
+  .tile button:focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; }
+  .tile .cap {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 28px 14px 12px; pointer-events: none;
+    font: 400 14px/1.4 var(--serif-kr); color: #f8f8f4;
+    background: linear-gradient(transparent, rgba(20, 27, 23, .72)); opacity: 0; transition: opacity .25s;
+    border-radius: 0 0 4px 4px;
+  }
+  .tile:hover .cap, .tile:focus-within .cap { opacity: 1; }
+  .tile .photo:not(.has-img) ~ .cap, .tile .photo:not(.has-img) ~ button { display: none; }
+  @media (hover: none) { .grid.mosaic .feature .cap { opacity: 1; } }
+  @media (prefers-reduced-motion: no-preference) {
+    .tile img { transition: transform .6s cubic-bezier(.2, .7, .2, 1); }
+    .tile:hover img { transform: scale(1.035); }
+  }
+  .gallery-note { margin: 24px 0 0; font-size: 13px; color: var(--muted); }
+
+  /* 사진 크게 보기 */
+  .lightbox { border: 0; padding: 0; margin: 0; width: 100vw; height: 100dvh; max-width: none; max-height: none;
+    background: rgba(12, 16, 14, .97); color: #f2f2ec; }
+  .lightbox::backdrop { background: rgba(12, 16, 14, .94); }
+  .lightbox[open] { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; overflow: hidden; }
+  .lb-top { display: flex; justify-content: space-between; align-items: center; padding: 14px var(--gutter); font-size: 13px; color: #b9c0b8; }
+  .lb-stage { position: relative; display: grid; place-items: center; min-height: 0; padding: 0 var(--gutter); }
+  .lb-stage img { display: block; width: auto; height: auto; max-width: 100%; max-height: calc(100dvh - 150px); object-fit: contain; border-radius: 2px; }
+  .lb-cap { margin: 0; padding: 14px var(--gutter) max(20px, env(safe-area-inset-bottom)); text-align: center; font: 400 16px/1.5 var(--serif-kr); }
+  .lb-btn { font: 300 15px/1 var(--sans); color: inherit; background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .22);
+    border-radius: 999px; padding: 10px 16px; cursor: pointer; }
+  .lb-btn:hover { background: rgba(255, 255, 255, .16); }
+  .lb-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 48px; height: 48px; padding: 0; font-size: 22px; }
+  .lb-prev { left: max(8px, var(--gutter)); } .lb-next { right: max(8px, var(--gutter)); }
+  @media (max-width: 560px) { .lb-nav { display: none; } } /* 휴대폰은 좌우로 밀어서 넘김 */
 
   /* 오시는 길 */
   .visit { display: grid; gap: clamp(32px, 5vw, 64px); grid-template-columns: 1fr; }
@@ -230,6 +281,63 @@
     .hero .plate { animation: settle 1.4s cubic-bezier(.2, .7, .2, 1) both; }
     @keyframes settle { from { transform: translateY(18px) rotate(-8deg); opacity: .4; } to { transform: none; opacity: 1; } }
   }
+  
+  /* ── 모바일 (699px 이하) ───────────────────── */
+  .menu-toggle { display: none; }
+  @media (max-width: 699px) {
+    /* 상단 바: 한 줄로, 메뉴는 버튼을 누르면 펼침 */
+    .topbar .wrap { flex-wrap: nowrap; min-height: 56px; }
+    .brand b { font-size: 24px; }
+    .menu-toggle {
+      display: inline-flex; align-items: center; gap: 8px; font: 400 14px/1 var(--sans); color: var(--ink);
+      background: none; border: 1px solid var(--line); border-radius: 999px; padding: 9px 14px; cursor: pointer;
+    }
+    .menu-toggle .bars { width: 14px; height: 9px; position: relative; border-block: 1px solid currentColor; }
+    .menu-toggle .bars::after { content: ""; position: absolute; left: 0; right: 0; top: 3px; border-top: 1px solid currentColor; }
+    .topbar nav {
+      position: absolute; top: 100%; left: 0; right: 0; display: none;
+      background: var(--paper); border-bottom: 1px solid var(--line); box-shadow: 0 18px 30px -24px var(--shade);
+    }
+    .topbar.open nav { display: block; }
+    .nav { flex-direction: column; gap: 0; padding: 4px var(--gutter) 12px; overflow: visible; }
+    .nav a { display: block; padding: 13px 0; font: 400 18px/1.4 var(--serif-kr); color: var(--ink); border-bottom: 1px solid var(--line); }
+    .nav li:last-child a { border-bottom: 0; }
+
+    /* 히어로 */
+    .hero .plate { width: calc(100% - 32px); }          /* 접시 테두리가 화면 끝에 닿지 않게 */
+    .hero .actions { display: grid; grid-template-columns: 1fr 1fr; }
+    .hero .actions .btn { text-align: center; padding-inline: 12px; }
+
+    /* 소개: 특징 3개를 한 줄에 */
+    .facts { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .facts dd { font-size: 15px; }
+
+    /* 대표 메뉴 접시 3개를 웹처럼 한 줄에 */
+    .signature { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .signature figure { gap: 14px; }
+    .signature figure:last-child { display: grid; }
+    .signature .plate { box-shadow: 0 0 0 6px var(--plate), 0 0 0 7px var(--line), 0 18px 30px -18px var(--shade); }
+    .signature .photo .slot { font-size: 0; padding: 6px; }
+    .signature .photo .slot strong { font-size: 12px; }
+    .signature figcaption { font-size: 14px; }
+    .signature figcaption i { font-size: 12px; }
+
+    /* 메뉴판 */
+    .item .name { font-size: 16px; }
+    .item .price { font-size: 17px; }
+
+    /* 갤러리 탭: 한 줄 */
+    .gallery-tabs { flex-wrap: nowrap; gap: 6px; }
+    .gallery-tabs li { flex: 1; }
+    .gallery-tabs button { width: 100%; padding: 10px 0; }
+    .gallery-tabs .it { display: none; }
+
+    /* 오시는 길 버튼: 같은 너비로 한 줄 */
+    .maplinks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .maplinks .btn { text-align: center; padding: 10px 4px; font-size: 13px; }
+
+    footer .wrap { flex-direction: column; gap: 8px; }
+  }
 </style>
 </head>
 <body>
@@ -237,13 +345,16 @@
 <header class="topbar">
   <div class="wrap">
     <a class="brand" href="#top" aria-label="일피아토 처음으로"><b>Il Piatto</b><span>일피아토</span></a>
-    <nav aria-label="주요 메뉴">
-      <ul class="nav">
-        <li><a href="#about">소개</a></li>
-        <li><a href="#menu">메뉴</a></li>
-        <li><a href="#reviews">후기</a></li>
-        <li><a href="#visit">오시는 길</a></li>
-      </ul>
+	<button type="button" class="menu-toggle" aria-expanded="false" aria-controls="site-nav">
+		<span class="bars" aria-hidden="true"></span>메뉴
+    </button>
+	<nav aria-label="주요 메뉴" id="site-nav">
+		<ul class="nav">
+			<li><a href="#about">소개</a></li>
+			<li><a href="#menu">메뉴</a></li>
+			<li><a href="#reviews">후기</a></li>
+			<li><a href="#visit">오시는 길</a></li>
+		</ul>
     </nav>
   </div>
 </header>
@@ -263,7 +374,7 @@
       </div>
       <figure class="photo plate">
         <img src="images/hero.jpg" alt="일피아토 대표 요리">
-        <figcaption class="slot"><strong>대표 요리 사진</strong>images/hero.jpg<br>정사각형 · 1200×1200px</figcaption>
+        <figcaption class="slot"><strong>대표 요리 사진</strong>images/ilpiatto_logo.jpg<br>정사각형 · 1200×1200px</figcaption>
       </figure>
     </div>
   </section>
@@ -285,7 +396,7 @@
           <p>토마토 소스는 몇 시간씩 천천히 졸입니다. 함박 스테이크는 직접 반죽하여 정성을 담아 음식을 만듭니다.</p>
           <p>편하게 오셔서 하이볼과 에이드 한 잔과 함께 천천히 드시고 가세요.</p>
           <dl class="facts">
-            <div><dt>스테이크</dt><dd>함박 스테이크 직접 반죽</dd></div>
+            <div><dt>함박스테이크</dt><dd>매일 직접 반죽</dd></div>
             <div><dt>분위기</dt><dd>편안한 분위기</dd></div>
             <div><dt>좌석</dt><dd>소규모 예약 가능</dd></div>
           </dl>
@@ -313,15 +424,15 @@
         </figure>
         <figure>
           <div class="photo plate"><img src="images/menu-3.jpg" alt="크림 수제 함박 스테이크"><span class="slot"><strong>대표 메뉴 3</strong>images/menu-3.jpg</span></div>
-          <figcaption>마르게리타<i>Pizza Margherita</i></figcaption>
+          <figcaption>크림 수제 함박 스테이크<i>Hamburg alla Crema</i></figcaption>
         </figure>
       </div>
 
       <div class="menu">
         <div class="course">
           <h3>Pasta</h3>
-          <p>식사 전에 가볍게</p>
-          <ul>
+          <p>파스타</p>
+<ul>
             <li class="item"><div class="row"><span class="name">명란 알리오올리오</span><span class="lead"></span><span class="price">18,000</span></div><p class="desc">마늘, 명란, 김가루가 조화를 이룬 오일 파스타</p></li>
             <li class="item"><div class="row"><span class="name">까르보나라</span><span class="lead"></span><span class="price">17,500</span></div><p class="desc">베이컨과 크림소스가 잘 어우러진 크림 파스타</p></li>
           </ul>
@@ -335,49 +446,48 @@
           </ul>
         </div>
         <div class="course">
-          <h3>Pizze</h3>
+          <h3>Pizza</h3>
           <p>피자</p>
           <ul>
             <li class="item"><div class="row"><span class="name">마르게리따 피자</span><span class="lead"></span><span class="price">18,000</span></div><p class="desc">토마토와 바질 향이 잘 어우러진 피자</p></li>
             <li class="item"><div class="row"><span class="name">콰트로 포르마지</span><span class="lead"></span><span class="price">19,500</span></div><p class="desc">모짜렐라, 고르곤졸라, 체다, 그라나파다노 네 가지 치즈를 올린 피자</p></li>
           </ul>
         </div>
-        <!-- <div class="course">
-          <h3>Dolci</h3>
-          <p>식사 후 달콤하게</p>
-          <ul>
-            <li class="item"><div class="row"><span class="name">티라미수</span><span class="lead"></span><span class="price">9,000</span></div><p class="desc">마스카르포네, 에스프레소, 카카오</p></li>
-            <li class="item"><div class="row"><span class="name">판나코타</span><span class="lead"></span><span class="price">8,000</span></div><p class="desc">바닐라 크림, 계절 과일 소스</p></li>
-          </ul>
-        </div> -->
       </div>
-      <p class="menu-note">표시된 가격은 부가가치세가 포함된 금액입니다. 메뉴는 계절과 재료 사정에 따라 바뀔 수 있습니다.</p>
+      <p class="menu-note">표시된 가격은 부가가치세가 포함된 금액입니다. 전체 메뉴는 매장에 오셔서 확인하실 수 있습니다.</p>
     </div>
   </section>
 
-  <!-- 후기 -->
-  <section class="block" id="reviews">
+  <!-- 갤러리 -->
+<section class="block" id="gallery">
     <div class="wrap">
       <div class="block-head">
-        <span class="it">Le vostre parole</span>
-        <h2>다녀가신 분들의 이야기</h2>
+        <span class="it">Galleria</span>
+        <h2>일피아또의 장면들</h2>
       </div>
-      <div class="reviews">
-        <figure class="review">
-          <blockquote>실제 손님 후기가 들어갈 자리입니다. 방문하신 분께 받은 후기를 이곳에 옮겨 적어 주세요.</blockquote>
-          <figcaption><span>작성자 이름 · 방문 날짜</span><span class="sample">예시</span></figcaption>
-        </figure>
-        <figure class="review">
-          <blockquote>후기는 두세 줄 정도가 가장 읽기 좋습니다. 길면 핵심 문장만 골라 주세요.</blockquote>
-          <figcaption><span>작성자 이름 · 방문 날짜</span><span class="sample">예시</span></figcaption>
-        </figure>
-        <figure class="review">
-          <blockquote>세 개를 기본으로 두고, 더 늘리면 자동으로 다음 줄에 배치됩니다.</blockquote>
-          <figcaption><span>작성자 이름 · 방문 날짜</span><span class="sample">예시</span></figcaption>
-        </figure>
+      <ul class="gallery-tabs" aria-label="사진 분류">
+        <li><button type="button" data-cat="all" aria-pressed="true">전체</button></li>
+        <li><button type="button" data-cat="food" aria-pressed="false">요리<span class="it">Piatti</span></button></li>
+        <li><button type="button" data-cat="space" aria-pressed="false">공간<span class="it">Sala</span></button></li>
+        <li><button type="button" data-cat="mood" aria-pressed="false">분위기<span class="it">Momenti</span></button></li>
+      </ul>
+      <div class="gallery">
+        <!-- 사진 목록은 images/gallery/gallery.json 에서 불러온다 (build_gallery.py가 만들어 줌) -->
+        <ul class="grid mosaic" id="gallery-grid"></ul>
       </div>
+      <p class="gallery-note">사진을 누르면 크게 볼 수 있습니다.</p>
     </div>
   </section>
+
+  <dialog class="lightbox" id="lightbox" aria-label="사진 크게 보기">
+    <div class="lb-top"><span id="lb-count"></span><button type="button" class="lb-btn" data-lb="close">닫기 ✕</button></div>
+    <div class="lb-stage">
+      <button type="button" class="lb-btn lb-nav lb-prev" data-lb="prev" aria-label="이전 사진">‹</button>
+      <img id="lb-img" alt="">
+      <button type="button" class="lb-btn lb-nav lb-next" data-lb="next" aria-label="다음 사진">›</button>
+    </div>
+    <p class="lb-cap" id="lb-cap"></p>
+  </dialog>
 
   <!-- 오시는 길 -->
   <section class="block" id="visit">
@@ -389,7 +499,7 @@
       <div class="visit">
         <figure class="photo">
           <img src="images/storefront.jpg" alt="일피아토 가게 외관">
-          <figcaption class="slot"><strong>가게 외관 또는 지도 이미지</strong>images/storefront.jpg<br>가로 16:11 · 1600×1100px</figcaption>
+          <figcaption class="slot"><strong>가게 외관 또는 지도 이미지</strong>images/ilpiatto_outside.jpg<br>가로 16:11 · 1600×1100px</figcaption>
         </figure>
         <div class="info">
           <div>
@@ -404,7 +514,10 @@
           </div>
           <div>
             <h3>Contatti</h3>
-            <p>전화 <a href="tel:031-396-8111">031-396-8111</a><br>주차는 불가하오니 양해 부탁드립니다.</p>
+            <p>전화 <a href="tel:031-396-8111">031-396-8111</a><br>저희 매장은 주차 공간이 없어 불편을 드리는 점 깊이 양해 부탁드립니다. 가까운 공영주차장이나 대중교통을 이용해 주시면 감사하겠습니다.</p>
+			<h3>Con i mezzi pubblici</h3>
+			<p>4호선 산본역 하차 → 3번 출구 앞 정류장 30번 버스 탑승 (수리동·e비즈니스고 방면) → 궁내초등학교정문 하차 → 궁내초등학교 바로 옆</p>
+			<p>4호선 산본역 하차 → 3번 출구 앞 정류장 마을 1번 or 3번 버스 탑승 (남천병원 하차) -> 위쪽 방면 도보 10분 거리</p>
           </div>
           <div class="maplinks">
             <a class="btn" href="https://m.place.naver.com/restaurant/2088439951/location?filter=location&selected_place_id=2088439951" target="_blank" rel="noopener">네이버 지도</a>
@@ -420,7 +533,7 @@
 <footer>
   <div class="wrap">
     <b>Il Piatto</b>
-    <span>일피아토 · 사업자 정보를 입력하세요</span>
+    <span>일피아토 · 대표:송호성<br><br>사업자 등록번호:775-24-02224<br><br>음식점업(양식)</span>
   </div>
 </footer>
 
