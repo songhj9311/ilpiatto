@@ -31,7 +31,7 @@ public class SeoController {
             List.of("https://naver.me/GNJL6BZZ",
                     "https://maps.app.goo.gl/iUJyKUGpHXXGEyom8",
                     "https://place.map.kakao.com/736552898"),
-            "e00bf01a667b75cc3e3614f2cbe554e7d6e6154e", "2uKErFqXSB-rIPo_AxqyXW-i01oMhKjmkOMy0sPmLsM", "ghtjd1200");
+            "e00bf01a667b75cc3e3614f2cbe554e7d6e6154e", "2uKErFqXSB-rIPo_AxqyXW-i01oMhKjmkOMy0sPmLsM", "90242f0e318d6eca242d435923f432f059151961f0c8792fd32e205723552602:sgQJn+c4WOkeYlgoF2KRow==");
 
     public SeoController(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
