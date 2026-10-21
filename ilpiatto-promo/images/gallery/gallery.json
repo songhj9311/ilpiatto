@@ -1,4 +1,59 @@
 {
-  "generated": "2026-10-22T00:20:41",
-  "photos": []
+  "generated": "2026-10-22T00:53:08",
+  "photos": [
+    {
+      "src": "images/gallery/01-space.jpg",
+      "thumb": "images/gallery/thumbs/01-space.jpg",
+      "w": 1050,
+      "h": 1400,
+      "alt": "ilpiatto space3",
+      "cat": "space",
+      "shape": "tall"
+    },
+    {
+      "src": "images/gallery/02-space.jpg",
+      "thumb": "images/gallery/thumbs/02-space.jpg",
+      "w": 1400,
+      "h": 1050,
+      "alt": "ilpiatto space1",
+      "cat": "space",
+      "shape": "wide"
+    },
+    {
+      "src": "images/gallery/03-space.jpg",
+      "thumb": "images/gallery/thumbs/03-space.jpg",
+      "w": 1400,
+      "h": 1050,
+      "alt": "ilpiatto space2",
+      "cat": "space",
+      "shape": "wide"
+    },
+    {
+      "src": "images/gallery/04-space.jpg",
+      "thumb": "images/gallery/thumbs/04-space.jpg",
+      "w": 1400,
+      "h": 1050,
+      "alt": "ilpiatto space4",
+      "cat": "space",
+      "shape": "wide"
+    },
+    {
+      "src": "images/gallery/05-space.jpg",
+      "thumb": "images/gallery/thumbs/05-space.jpg",
+      "w": 1400,
+      "h": 1050,
+      "alt": "ilpiatto space5",
+      "cat": "space",
+      "shape": "wide"
+    },
+    {
+      "src": "images/gallery/06-space.jpg",
+      "thumb": "images/gallery/thumbs/06-space.jpg",
+      "w": 1400,
+      "h": 1050,
+      "alt": "ilpiatto space6",
+      "cat": "space",
+      "shape": "wide"
+    }
+  ]
 }
