@@ -4,4 +4,4 @@ Disallow: /admin/
 
 Sitemap: https://www.ilpiatto.co.kr/sitemap.xml
 
-#DaumWebMasterTool:90242f0e318d6eca242d435923f432f059151961f0c8792fd32e205723552602:sgQJn+c4WOkeYlgoF2KRow==
+#DaumWebMasterTool:38d0e9e1be1f4a1b687cb81ed455141fa53f954f056e5f82fec1e414616980a7:WoYFtMaR84eZ7MaX1Xjw9A==
