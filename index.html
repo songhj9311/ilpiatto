@@ -858,7 +858,7 @@
       if (store.get() === key) return;                              // 오늘 하루 보지 않기
       box.dataset.key = key;
       render(notices, menus);
-      setTimeout(() => box.showModal(), 600);                       // 페이지가 먼저 보이고 살짝 뒤에
+      // setTimeout(() => box.showModal(), 600);                       // 페이지가 먼저 보이고 살짝 뒤에
     })();
   }
 </script>
