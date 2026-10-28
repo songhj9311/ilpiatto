@@ -798,7 +798,7 @@
     }
 
     async function load() {
-      for (const url of [API, FALLBACK]) {
+      for (const url of [FALLBACK]) {
         try {
           const res = await fetch(url, { headers: { Accept: "application/json" }, cache: "no-cache" });
           if (res.ok) return await res.json();
