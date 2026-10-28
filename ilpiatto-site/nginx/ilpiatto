@@ -1,7 +1,7 @@
 # /etc/nginx/sites-available/ilpiatto
 server {
     listen 80;
-    server_name _;
+    server_name ilpiatto.kr www.ilpiatto.kr;
 
     # 관리자 사이트라 비밀번호로 보호 (htpasswd 파일은 배포 단계에서 생성)
     auth_basic           "ilpiatto Admin";
@@ -16,7 +16,8 @@ server {
 
     # Python API
     location /py/ {
-        proxy_pass http://127.0.0.1:8000/;
+        # proxy_pass http://127.0.0.1:8000/;
+		proxy_pass http://127.0.0.1:8081;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
     }
@@ -26,5 +27,17 @@ server {
         proxy_pass http://127.0.0.1:8080/java/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
+    }
+	
+	# admin API
+	# 홍보 사이트 팝업: 로그인 없이 공개 (GET만)
+    # nginx 설정 파일의 server { } 안, "location /admin/" 위에 붙여 넣기
+    # Java로 바꾸려면 proxy_pass 를 http://127.0.0.1:8080/java/public/popup 으로
+    location = /api/popup {
+        auth_basic off;                                    # 이 주소만 비밀번호 해제
+        proxy_pass http://127.0.0.1:8081/py/public/popup;  # /py/ 와 같은 Python(8081)
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        limit_except GET { deny all; }
     }
 }

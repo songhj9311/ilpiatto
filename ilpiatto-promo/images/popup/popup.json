@@ -1,0 +1,19 @@
+{
+  "notices": [
+    {
+      "title": "11월 정기 휴무 안내",
+      "body": "11월 3일(월), 10일(월)은 정기 휴무입니다.\n방문에 참고 부탁드립니다.",
+      "show_from": "2026-10-28",
+      "show_until": "2026-11-10"
+    }
+  ],
+  "new_menus": [
+    {
+      "title": "루꼴라 스트라차텔라 피자",
+      "body": "루꼴라, 발사믹, 스트라차텔라, 방울토마토로 만든 피자",
+      "launch_date": "2026-11-15",
+      "image_url": "images/popup/rucola-pizza.jpg",
+      "show_from": "2026-10-28"
+    }
+  ]
+}

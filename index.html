@@ -683,5 +683,185 @@
 </script>
 <script data-goatcounter="https://songhj9311.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
+<!-- ════════════════════════════════════════════════════════════════════
+     일피아또 팝업 (공지사항 · 신메뉴 출시 예정)
+     넣는 곳: index.html 맨 아래 </body> 바로 위에 이 파일 내용을 통째로 붙여 넣기
+     내용 관리: 관리자 사이트 /admin/popup-admin.html
+     ════════════════════════════════════════════════════════════════════ -->
+<style>
+  .pop { border: 0; padding: 0; width: min(440px, calc(100vw - 32px)); max-height: min(86dvh, 760px);
+    background: var(--paper, #eceee8); color: var(--ink, #1e2b23); border-radius: 6px; overflow: hidden;
+    box-shadow: 0 30px 80px -20px rgba(0, 0, 0, .45); }
+  .pop::backdrop { background: rgba(20, 27, 23, .55); backdrop-filter: blur(2px); }
+  .pop[open] { display: flex; flex-direction: column; }
+  .pop-head { position: relative; padding: 26px 26px 18px; border-bottom: 1px solid var(--line, #c9cfc5); }
+  .pop-head .it { display: block; font: italic 400 16px/1 var(--display, serif); color: var(--brass, #8f6a2f); }
+  .pop-head h2 { margin: 8px 0 0; font: 400 24px/1.3 var(--serif-kr, serif); outline: none; }  /* 열릴 때 제목에 초점(닫기 버튼에 테두리가 생기지 않게) */
+  .pop-x { position: absolute; top: 14px; right: 14px; width: 40px; height: 40px; border: 0; border-radius: 50%;
+    background: none; color: var(--muted, #5d6a61); font-size: 22px; line-height: 1; cursor: pointer; }
+  .pop-x:hover { background: color-mix(in srgb, var(--ink, #1e2b23) 8%, transparent); color: var(--ink, #1e2b23); }
+  .pop-body { overflow-y: auto; padding: 6px 26px 22px; overscroll-behavior: contain; }
+  .pop-sec h3 { margin: 18px 0 10px; font: 400 13px/1 var(--sans, sans-serif); letter-spacing: .12em; color: var(--muted, #5d6a61); }
+  .pop-sec h3 i { font: italic 400 15px/1 var(--display, serif); letter-spacing: 0; color: var(--brass, #8f6a2f); margin-right: 6px; }
+  .pop-notice { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+  .pop-notice li { padding: 12px 0; border-top: 1px solid var(--line, #c9cfc5); }
+  .pop-notice li:first-child { border-top: 0; padding-top: 0; }
+  .pop-notice b { display: block; font: 400 17px/1.5 var(--serif-kr, serif); }
+  .pop-notice p { margin: 4px 0 0; font-size: 14px; line-height: 1.7; color: var(--muted, #5d6a61); white-space: pre-line; }
+  .pop-menus { display: grid; gap: 14px; }
+  .pop-menu { background: var(--plate, #f8f8f4); border-radius: 4px; overflow: hidden; }
+  .pop-menu img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; background: var(--photo-bg, #dde1d8); }
+  .pop-menu .txt { padding: 14px 16px 16px; }
+  .pop-menu .row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .pop-menu b { font: 400 18px/1.4 var(--serif-kr, serif); }
+  .pop-dday { flex: none; font: 500 12px/1 var(--sans, sans-serif); padding: 6px 10px; border-radius: 999px;
+    background: var(--ink, #1e2b23); color: var(--paper, #eceee8); }
+  .pop-dday.soon { background: var(--brass, #8f6a2f); }
+  .pop-menu .when { margin: 4px 0 0; font-size: 13px; color: var(--brass, #8f6a2f); }
+  .pop-menu p { margin: 6px 0 0; font-size: 14px; line-height: 1.7; color: var(--muted, #5d6a61); white-space: pre-line; }
+  .pop-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 14px 18px 14px 26px; border-top: 1px solid var(--line, #c9cfc5); background: var(--plate, #f8f8f4); }
+  .pop-foot label { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted, #5d6a61); cursor: pointer; }
+  .pop-foot input { width: 18px; height: 18px; accent-color: var(--ink, #1e2b23); }
+  .pop-foot button { font: 400 15px/1 var(--sans, sans-serif); padding: 12px 26px; border: 0; border-radius: 999px;
+    background: var(--ink, #1e2b23); color: var(--paper, #eceee8); cursor: pointer; }
+  .pop-foot button:hover { background: var(--brass, #8f6a2f); }
+  /* 휴대폰: 아래에서 올라오는 시트 */
+  @media (max-width: 560px) {
+    .pop { width: 100vw; max-width: none; max-height: 88dvh; margin: auto 0 0; border-radius: 16px 16px 0 0; }
+    .pop-foot { padding-bottom: max(14px, env(safe-area-inset-bottom)); }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .pop[open] { animation: pop-in .35s cubic-bezier(.2, .7, .2, 1); }
+    @keyframes pop-in { from { opacity: 0; transform: translateY(16px); } }
+  }
+</style>
+
+<dialog class="pop" id="site-popup" aria-labelledby="pop-title">
+  <div class="pop-head">
+    <span class="it">Avvisi</span>
+    <h2 id="pop-title" tabindex="-1" autofocus>일피아또 소식</h2>
+    <button type="button" class="pop-x" data-pop="close" aria-label="닫기">✕</button>
+  </div>
+  <div class="pop-body">
+    <section class="pop-sec" id="pop-notice-sec" hidden>
+      <h3><i>Notizie</i>공지사항</h3>
+      <ul class="pop-notice" id="pop-notices"></ul>
+    </section>
+    <section class="pop-sec" id="pop-menu-sec" hidden>
+      <h3><i>Novità</i>신메뉴 출시 예정</h3>
+      <div class="pop-menus" id="pop-menus"></div>
+    </section>
+  </div>
+  <div class="pop-foot">
+    <label><input type="checkbox" id="pop-today"> 오늘 하루 보지 않기</label>
+    <button type="button" data-pop="close">닫기</button>
+  </div>
+</dialog>
+
+<script>
+  {  // 팝업 코드를 블록으로 감싸 다른 스크립트와 이름이 겹치지 않게
+    const API = "/api/popup";                     // 서버(관리자 화면에서 관리하는 내용)
+    const FALLBACK = "images/popup/popup.json";   // 서버가 없을 때(예: GitHub Pages) 쓰는 파일
+    const HIDE_KEY = "ilpiatto-popup-hidden";
+    const box = document.getElementById("site-popup");
+
+    // 오늘 날짜 (한국 시간, "2026-10-28" 형식)
+    const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(new Date());
+    const days = (a, b) => Math.round((Date.parse(a) - Date.parse(b)) / 86400000);   // a - b (일)
+    const md = (d) => `${Number(d.slice(5, 7))}월 ${Number(d.slice(8, 10))}일`;
+
+    // 서버가 고른 항목을 한 번 더 날짜로 거름 (정적 파일을 쓸 때도 기간이 지나면 자동으로 숨기기 위해)
+    const visible = (p) => p.active !== false && (!p.show_from || p.show_from <= today)
+      && (!p.show_until || p.show_until >= today)
+      && (p.kind !== "new_menu" || !p.launch_date || days(p.launch_date, today) >= -7);
+
+    // 내용이 바뀌면 "오늘 하루 보지 않기"를 눌렀어도 다시 보이도록 내용으로 짧은 지문을 만든다
+    const fingerprint = (s) => { let h = 5381; for (const c of s) h = (h * 33 + c.charCodeAt(0)) | 0; return (h >>> 0).toString(36); };
+    const store = {
+      get() { try { return localStorage.getItem(HIDE_KEY); } catch (_) { return null; } },
+      set(v) { try { localStorage.setItem(HIDE_KEY, v); } catch (_) { /* 사생활 보호 모드 등 */ } },
+    };
+
+    function el(tag, cls, text) {
+      const n = document.createElement(tag);
+      if (cls) n.className = cls;
+      if (text) n.textContent = text;   // 글자는 textContent로만 넣어 HTML이 실행되지 않게
+      return n;
+    }
+
+    function dday(launch) {
+      const d = days(launch, today);
+      if (d > 0) return { text: `D-${d}`, soon: d <= 7 };
+      if (d === 0) return { text: "오늘 출시", soon: true };
+      return { text: "출시", soon: false };
+    }
+
+    async function load() {
+      for (const url of [API, FALLBACK]) {
+        try {
+          const res = await fetch(url, { headers: { Accept: "application/json" }, cache: "no-cache" });
+          if (res.ok) return await res.json();
+        } catch (_) { /* 다음 주소로 */ }
+      }
+      return null;
+    }
+
+    function render(notices, menus) {
+      const nList = document.getElementById("pop-notices");
+      notices.forEach((p) => {
+        const li = el("li");
+        li.append(el("b", "", p.title));
+        if (p.body) li.append(el("p", "", p.body));
+        nList.append(li);
+      });
+      document.getElementById("pop-notice-sec").hidden = !notices.length;
+
+      const mList = document.getElementById("pop-menus");
+      menus.forEach((p) => {
+        const card = el("article", "pop-menu");
+        if (p.image_url && /^(images\/|https:\/\/)/.test(p.image_url)) {
+          const img = new Image();
+          img.src = p.image_url; img.alt = p.title; img.loading = "lazy";
+          img.addEventListener("error", () => img.remove());
+          card.append(img);
+        }
+        const txt = el("div", "txt");
+        const row = el("div", "row");
+        const d = dday(p.launch_date);
+        row.append(el("b", "", p.title), el("span", `pop-dday${d.soon ? " soon" : ""}`, d.text));
+        txt.append(row, el("p", "when", `${md(p.launch_date)} ${days(p.launch_date, today) < 0 ? "출시되었습니다" : "출시 예정"}`));
+        if (p.body) txt.append(el("p", "", p.body));
+        card.append(txt);
+        mList.append(card);
+      });
+      document.getElementById("pop-menu-sec").hidden = !menus.length;
+    }
+
+    function close() {
+      if (document.getElementById("pop-today").checked) store.set(box.dataset.key);
+      box.close();
+    }
+    box.addEventListener("click", (e) => {
+      if (e.target.closest("[data-pop='close']") || e.target === box) close();   // 바깥(어두운 곳) 눌러도 닫힘
+    });
+    box.addEventListener("cancel", (e) => { e.preventDefault(); close(); });      // Esc
+
+    (async () => {
+      const data = await load();
+      if (!data) return;
+      const notices = (data.notices || []).filter((p) => visible({ ...p, kind: "notice" }));
+      const menus = (data.new_menus || []).filter((p) => p.launch_date && visible({ ...p, kind: "new_menu" }));
+      if (!notices.length && !menus.length) return;                 // 보여줄 게 없으면 팝업 없음
+
+      const key = `${today}|${fingerprint(JSON.stringify([notices, menus]))}`;
+      if (store.get() === key) return;                              // 오늘 하루 보지 않기
+      box.dataset.key = key;
+      render(notices, menus);
+      setTimeout(() => box.showModal(), 600);                       // 페이지가 먼저 보이고 살짝 뒤에
+    })();
+  }
+</script>
+<!-- ═══════════════════════════ 팝업 끝 ═══════════════════════════ -->
 </body>
 </html>

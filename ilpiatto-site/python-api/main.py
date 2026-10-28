@@ -11,13 +11,14 @@ from psycopg.rows import dict_row
 from pydantic import BaseModel, Field
 
 import pricing
+import popup
 
 DB_URL = os.getenv(
     "DB_URL", "postgresql://ilpiatto:변경할_비밀번호@127.0.0.1:5432/ilpiatto_db"
 )
 
 app = FastAPI(title="일피아또 관리자 API (Python)", root_path="/py")
-
+app.include_router(popup.router)
 
 # ── 로그 기록 ───────────────────────────────────────────────────
 # 파일 하나에 계속 이어 쓴다. 일주일마다 log_backup.py가 백업 후 비운다.
