@@ -119,8 +119,8 @@
     const isMenu = f.kind.value === "new_menu";
     document.getElementById("launch-wrap").hidden = !isMenu;
     f.launch_date.required = isMenu;
-    document.getElementById("title-label").textContent = isMenu ? "신메뉴 이름" : "제목";
-    f.title.placeholder = isMenu ? "예: 루꼴라 스트라차텔라 피자" : "예: 11월 정기 휴무 안내";
+    document.getElementById("title-label").textContent = isMenu ? "신메뉴 이름" : "와인";
+    f.title.placeholder = isMenu ? "하우스 와인(화이트 와인)" : "11월 출시 안내";
   }
   f.kind.addEventListener("change", syncKind);
 
