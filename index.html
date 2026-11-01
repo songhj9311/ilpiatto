@@ -740,7 +740,7 @@
 <dialog class="pop" id="site-popup" aria-labelledby="pop-title">
   <div class="pop-head">
     <span class="it">Avvisi</span>
-    <h2 id="pop-title" tabindex="-1" autofocus>일피아또 소식</h2>
+    <h2 id="pop-title" tabindex="-1" autofocus>일피아토 소식</h2>
     <button type="button" class="pop-x" data-pop="close" aria-label="닫기">✕</button>
   </div>
   <div class="pop-body">
@@ -761,7 +761,7 @@
 
 <script>
   {  // 팝업 코드를 블록으로 감싸 다른 스크립트와 이름이 겹치지 않게
-    const API = "/api/popup";                     // 서버(관리자 화면에서 관리하는 내용)
+    const API = "ilpiatto-site/python-api/popup";                     // 서버(관리자 화면에서 관리하는 내용)
     const FALLBACK = "ilpiatto-promo/images/popup/popup.json";   // 서버가 없을 때(예: GitHub Pages) 쓰는 파일
     const HIDE_KEY = "ilpiatto-popup-hidden";
     const box = document.getElementById("site-popup");
@@ -858,7 +858,7 @@
       if (store.get() === key) return;                              // 오늘 하루 보지 않기
       box.dataset.key = key;
       render(notices, menus);
-      // setTimeout(() => box.showModal(), 600);                       // 페이지가 먼저 보이고 살짝 뒤에
+      setTimeout(() => box.showModal(), 600);                       // 페이지가 먼저 보이고 살짝 뒤에
     })();
   }
 </script>
